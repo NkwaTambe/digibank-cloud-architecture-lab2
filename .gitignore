@@ -1,0 +1,27 @@
+# Build artifacts
+target/
+*.war
+*.jar
+*.ear
+
+# IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.settings/
+.project
+.classpath
+.factorypath
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# WildFly / Maven
+wildfly-*/
+.mvn/wrapper/maven-wrapper.jar
