@@ -9,7 +9,12 @@ target/
 *.iml
 *.iws
 *.ipr
-.vscode/
+# Keep shared VS Code config (settings.json, extensions.json, launch.json)
+# but ignore personal per-machine files.
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
 .settings/
 .project
 .classpath

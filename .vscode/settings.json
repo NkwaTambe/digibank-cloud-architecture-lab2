@@ -1,0 +1,18 @@
+{
+  // Java runtime — path is left empty so VS Code auto-detects the JDK
+  // from JAVA_HOME / system PATH on each contributor's machine.
+  // Anyone can override locally by setting "path" to their JDK folder.
+  "java.configuration.runtimes": [
+    {
+      "name": "JavaSE-21",
+      "default": true
+    },
+    {
+      "name": "JavaSE-17"
+    }
+  ],
+  "java.import.maven.enabled": true,
+  "java.test.config": {
+    "workingDirectory": "${workspaceFolder}"
+  }
+}
