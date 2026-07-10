@@ -27,6 +27,8 @@ DO $$
 BEGIN
   IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'digibank_user') THEN
     CREATE USER digibank_user WITH PASSWORD 'digibank_pwd';
+  ELSE
+    ALTER USER digibank_user WITH PASSWORD 'digibank_pwd';
   END IF;
 END
 $$;
