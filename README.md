@@ -14,6 +14,9 @@ Welcome to the **Digi Bank Modular Monolith** codebase! This project is a comple
 
 This document provides a highly detailed, step-by-step walkthrough to get the application up and running on your machine within minutes.
 
+> [!TIP]
+> **Project Startup & Verification Guide:** For a dedicated walkthrough on starting the application, running interactive scripts, and using tools like Swagger UI and Adminer (with placeholders for visual screenshots), see [project_startup.md](project_startup.md).
+
 ---
 
 ## 🏗 Modular Architecture Diagram
