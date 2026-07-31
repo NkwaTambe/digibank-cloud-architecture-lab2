@@ -33,6 +33,36 @@ $$;
 
 GRANT ALL PRIVILEGES ON DATABASE digibank_db TO digibank_user;
 
+-- Connect to digibank_db to set up tables and grant schema permissions
+\c digibank_db
+
+GRANT ALL ON SCHEMA public TO digibank_user;
+
+-- Customers table
+CREATE TABLE IF NOT EXISTS customers (
+    id BIGSERIAL PRIMARY KEY,
+    firstName VARCHAR(255) NOT NULL,
+    lastName VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE
+);
+
+-- Accounts table
+CREATE TABLE IF NOT EXISTS accounts (
+    id BIGSERIAL PRIMARY KEY,
+    accountNumber VARCHAR(255) NOT NULL UNIQUE,
+    balance DOUBLE PRECISION NOT NULL
+);
+
+-- Transactions table
+CREATE TABLE IF NOT EXISTS transactions (
+    id BIGSERIAL PRIMARY KEY,
+    type VARCHAR(255) NOT NULL,
+    amount DOUBLE PRECISION NOT NULL
+);
+
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO digibank_user;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO digibank_user;
+
 -- =============================================================
 -- 3.2 Connection verification
 -- After running this script, verify the connection with:

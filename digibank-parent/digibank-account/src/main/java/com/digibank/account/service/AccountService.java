@@ -1,21 +1,26 @@
 package com.digibank.account.service;
 
 import com.digibank.account.model.Account;
+import com.digibank.account.repository.AccountRepository;
 import jakarta.ejb.Stateless;
-import java.util.ArrayList;
-import java.util.Collections;
+import jakarta.inject.Inject;
 import java.util.List;
 
 @Stateless
 public class AccountService {
 
-    private static final List<Account> ACCOUNTS = new ArrayList<>();
+    @Inject
+    private AccountRepository repository;
 
     public void createAccount(Account account) {
-        ACCOUNTS.add(account);
+        repository.save(account);
+    }
+
+    public Account getAccount(Long id) {
+        return repository.findById(id);
     }
 
     public List<Account> getAccounts() {
-        return Collections.unmodifiableList(ACCOUNTS);
+        return repository.findAll();
     }
 }
