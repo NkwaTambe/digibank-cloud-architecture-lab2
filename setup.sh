@@ -24,6 +24,22 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$SCRIPT_DIR"
 PARENT_DIR="$PROJECT_ROOT/digibank-parent"
 
+# Auto-detect Maven executable (check PATH, then local wrapper binaries)
+MVN_CMD="mvn"
+if ! command -v mvn &>/dev/null; then
+    for candidate in \
+        "$HOME/.m2/wrapper/dists/apache-maven-3.9.15/9925cc1d/bin/mvn" \
+        "$HOME/.m2/wrapper/dists/apache-maven-3.9.15-bin/4rlcemksed9vjmkvgss0jpc4po/apache-maven-3.9.15/bin/mvn" \
+        "/snap/intellij-idea-ultimate/current/plugins/maven-plugin/lib/maven3/bin/mvn" \
+        "/usr/share/maven/bin/mvn"
+    do
+        if [ -x "$candidate" ]; then
+            MVN_CMD="$candidate"
+            break
+        fi
+    done
+fi
+
 # Database
 DB_NAME="digibank_db"
 DB_USER="digibank_user"
@@ -96,12 +112,22 @@ check_prerequisites() {
     local missing=0
 
     check_command java || missing=1
-    check_command mvn || missing=1
-    check_command psql || missing=1
+    if ! command -v "$MVN_CMD" &> /dev/null; then
+        print_error "Maven (mvn) is not installed or not in PATH"
+        missing=1
+    else
+        print_step "Maven found: $MVN_CMD"
+    fi
     check_command git || missing=1
 
+    if ! command -v psql &> /dev/null; then
+        print_warn "psql client not found (only required for direct local Postgres connection)"
+    else
+        print_step "psql found: $(command -v psql)"
+    fi
+
     if [ $missing -eq 1 ]; then
-        print_error "Some prerequisites are missing. Please install them first."
+        print_error "Some core prerequisites are missing. Please install them first."
         exit 1
     fi
 
@@ -113,7 +139,7 @@ check_prerequisites() {
         exit 1
     fi
     print_step "Java version: $(java -version 2>&1 | head -1)"
-    print_step "Maven version: $(mvn -version 2>&1 | head -1)"
+    print_step "Maven version: $($MVN_CMD -version 2>&1 | head -1)"
 
     echo ""
     print_step "All prerequisites satisfied!"
@@ -166,10 +192,10 @@ maven_build() {
 
     cd "$PARENT_DIR"
 
-    print_info "Running: mvn clean install"
+    print_info "Running: $MVN_CMD clean install"
     echo ""
 
-    mvn clean install 2>&1 | tail -30
+    "$MVN_CMD" clean install 2>&1 | tail -30
 
     local status=${PIPESTATUS[0]}
     echo ""
@@ -387,19 +413,12 @@ stop_wildfly() {
 deploy_app() {
     print_header "Deploying Application"
 
-    local war_file="$PARENT_DIR/digibank-app/target/digibank-app.war"
+    print_header "Deploying Application to WildFly"
 
-    if [ ! -f "$war_file" ]; then
-        print_error "WAR file not found. Run build first."
-        print_info "Running build..."
-        maven_build
-    fi
-
-    # Try Maven deploy first
     cd "$PARENT_DIR"
-    print_info "Deploying via wildfly-maven-plugin..."
 
-    mvn wildfly:deploy -pl digibank-app 2>&1 | tail -10
+    print_info "Deploying WAR via wildfly-maven-plugin..."
+    "$MVN_CMD" wildfly:deploy -pl digibank-app 2>&1 | tail -10
 
     local status=${PIPESTATUS[0]}
     if [ $status -eq 0 ]; then

@@ -1,21 +1,26 @@
 package com.digibank.transaction.service;
 
 import com.digibank.transaction.model.Transaction;
+import com.digibank.transaction.repository.TransactionRepository;
 import jakarta.ejb.Stateless;
-import java.util.ArrayList;
-import java.util.Collections;
+import jakarta.inject.Inject;
 import java.util.List;
 
 @Stateless
 public class TransactionService {
 
-    private static final List<Transaction> TRANSACTIONS = new ArrayList<>();
+    @Inject
+    private TransactionRepository repository;
 
     public void addTransaction(Transaction transaction) {
-        TRANSACTIONS.add(transaction);
+        repository.save(transaction);
+    }
+
+    public Transaction getTransaction(Long id) {
+        return repository.findById(id);
     }
 
     public List<Transaction> getTransactions() {
-        return Collections.unmodifiableList(TRANSACTIONS);
+        return repository.findAll();
     }
 }
