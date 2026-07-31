@@ -1,271 +1,325 @@
-# Digi Bank — Modular Monolith (Jakarta EE)
+# 🏦 Digi Bank — Modular Monolithic Banking System
 
-> **UCC 122-1 · Cloud Architecture · Lab 2**
-> Designing an initial monolithic architecture (Legacy application) for **Digi Bank** with Jakarta EE.
->
-> *Cloud Computing Professional License — University of the Mountains*
+> **UCC 122-1 · Cloud Architecture · Lab 2**  
+> Designing an initial monolithic architecture (legacy banking application) for **Digi Bank** using **Jakarta EE 10** and **WildFly 33**.
+> 
+> *Professional Bachelor's Degree in Cloud Computing — University of the Mountains*  
 > Supervisor: **Eng. Willy Damtchou** · June 2026
 
 ---
 
-## Overview
+## 📌 Introduction
 
-This project is the deliverable for **Lab 2** of the Cloud Architecture course.
-It implements a first operational version of **Digi Bank**, a secure transactional
-system for managing customers, accounts, financial operations and compliance controls,
-built as a **modular monolith** on **Jakarta EE 10** and deployed to **WildFly 33**.
+Welcome to the **Digi Bank Modular Monolith** codebase! This project is a complete guide to developing, testing, deploying, and containerizing a modular monolithic banking application using **Jakarta EE 10**, **Hibernate/JPA**, **PostgreSQL**, and **WildFly 33**. 
 
-The lab moves from the analysis carried out in Lab 1 to a concrete, executable
-implementation that respects a complete technical structure and a logical order of
-development.
+This document provides a highly detailed, step-by-step walkthrough to get the application up and running on your machine within minutes.
 
-## Architecture
+> [!TIP]
+> **Project Startup & Verification Guide:** For a dedicated walkthrough on starting the application, running interactive scripts, and using tools like Swagger UI and Adminer (with placeholders for visual screenshots), see [project_startup.md](project_startup.md).
 
-A multi-module Maven project where each functional domain is an independent module,
-assembled into a single deployable WAR by the `digibank-app` module.
+---
+
+## 🏗 Modular Architecture Diagram
+
+Rather than a distributed set of microservices, this application runs as a **Modular Monolith**. It is composed of multiple independent modules packaged into JARs, which are compiled and bundled together inside a single deployable Web Archive (`digibank-app.war`).
 
 ```
-digibank-parent/          (pom)   — root, dependency & plugin management
-├── digibank-shared/      (jar)   — common model & DTOs (BaseEntity, ApiResponse)
-├── digibank-customer/    (jar)   — customer domain (entity, repo, service, REST)
-├── digibank-account/     (jar)   — account domain (entity, service, REST)
-├── digibank-transaction/ (jar)   — transaction domain (entity, service, REST)
-├── digibank-compliance/  (jar)   — compliance checks (service, REST)
-├── digibank-index/       (war)   — web UI (IndexServlet + index.jsp)
-└── digibank-app/         (war)   — assembly module, JAX-RS activation, persistence
+                              [ digibank-parent (Reactor POM) ]
+                                              │
+      ┌───────────────┬───────────────┬───────┴───────┬───────────────┬───────────────┐
+      ▼               ▼               ▼               ▼               ▼               ▼
+[Shared Module] [Customer Module] [Account Module] [Transaction] [Compliance]   [Index Module]
+ (BaseEntity,      (JPA, EJB,      (In-memory,     (In-memory,    (Validation,     (IndexServlet,
+ ApiResponse)      REST endpoints)  REST API)       REST API)       BDD tests)       index.jsp)
+      │               │               │               │               │               │
+      └───────────────┼───────────────┼───────────────┼───────────────┘               │
+                      ▼               ▼               ▼                               │
+                      [ Compiled JARs copied into WEB-INF/lib ]                       │
+                                      │                                               │
+                                      ▼                                               ▼
+                                 [ digibank-app (WAR Assembly) ] ◀──────(Overlay)─────┘
 ```
 
-### Module responsibilities
+---
 
-| Module | Packaging | Role |
-| --- | --- | --- |
-| `digibank-shared` | jar | `@MappedSuperclass` base entity, shared DTOs |
-| `digibank-customer` | jar | Customer CRUD — JPA-backed entity, repository, service, REST resource |
-| `digibank-account` | jar | Account management (in-memory store in this lab) |
-| `digibank-transaction` | jar | Transaction recording (in-memory store in this lab) |
-| `digibank-compliance` | jar | Transaction amount validation (≤ 10 000) |
-| `digibank-index` | war | Landing page listing modules and REST endpoints |
-| `digibank-app` | war | Assembly: JAX-RS `@ApplicationPath("/api")`, `persistence.xml`, overlays `digibank-index` |
+## 🚀 1. Simple Getting Started Guide (Docker Mode)
 
-## Tech Stack
+This is the **easiest and recommended way** to run the project. You do not need to install Java, Maven, PostgreSQL, or WildFly on your host machine. Everything runs inside Docker.
 
-| Layer | Technology |
-| --- | --- |
-| Language | Java 17 |
-| Platform | Jakarta EE 10 (`jakarta.jakartaee-api`) |
-| Build | Apache Maven (multi-module) |
-| Persistence | JPA / Hibernate (Jakarta Persistence) |
-| REST | JAX-RS |
-| EJB | `@Stateless` session beans, `@Inject` CDI |
-| Web | Servlet + JSP (index module) |
-| Database | PostgreSQL 18 |
-| Application server | WildFly 33.0.2.Final |
-| Unit testing | JUnit 5 (Jupiter) |
-| BDD testing | Cucumber 7 + JUnit Platform Suite |
-
-## Prerequisites
-
-- **JDK 17** (compatible with Jakarta EE)
-- **Apache Maven** 3.9+
-- **PostgreSQL** 18
-- **WildFly** 33.0.2.Final
-- **IntelliJ IDEA** (Community/Ultimate) or **VS Code** with Java extensions
-- **Git**
-
-## Setup
-
-### 1. Database
-
-```sql
-CREATE DATABASE digibank_db;
-CREATE USER digibank_user WITH PASSWORD 'digibank_pwd';
-GRANT ALL PRIVILEGES ON DATABASE digibank_db TO digibank_user;
+### Prerequisite Check
+Before starting, make sure you have **Docker** and **Docker Compose** installed:
+```bash
+docker --version
+docker compose version
 ```
 
-Verify the connection:
+### Step 1: Run the Control Center
+From the root of the project directory, execute the interactive script:
+```bash
+./setup.sh
+```
 
+### Step 2: Choose Option 1 (Docker Compose)
+When the menu loads, type **`1`** and press **Enter**:
+```text
+  Enter choice (1-9): 1
+```
+
+### Step 3: What Happens Under the Hood
+1. **Maven Build**: The script compiles the Java source files, runs the test suites, and compiles the `digibank-app.war` artifact.
+2. **Database Launch**: Launches a PostgreSQL container (`digibank-db`) on host port `5434`. It automatically runs `db/init.sql` to configure database tables and permissions.
+3. **WildFly Launch**: Builds and starts the WildFly server (`digibank-app`) on host port `9090`. It injects the JNDI Datasource mapping (`java:/jdbc/DigiBankDS`) and deploys the compiled WAR file.
+4. **Endpoint Diagnostics**: The script polls the server and executes automated REST tests using `curl`.
+
+**Expected Success Output:**
+```text
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  🏦 Testing REST Endpoints
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✓ POST /api/customers (create) — HTTP 201
+  ✓ GET /api/customers (list) — HTTP 200
+  ✓ POST /api/accounts (create) — HTTP 201
+  ✓ GET /api/accounts (list) — HTTP 200
+  ✓ POST /api/transactions (create) — HTTP 201
+  ✓ GET /api/transactions (list) — HTTP 200
+  ✓ GET /api/compliance/validate/5000 — HTTP 200
+  ✓ GET /api/compliance/validate/25000 — HTTP 200
+
+  Results: 8 passed, 0 failed out of 8 endpoints
+```
+
+### Step 4: Access in the Browser
+Open your web browser and navigate to:
+- **Landing Web Portal**: [http://localhost:9090/digibank-app](http://localhost:9090/digibank-app)
+- **REST APIs Endpoint**: [http://localhost:9090/digibank-app/api/index](http://localhost:9090/digibank-app/api/index)
+
+### Step 5: Stop the Application
+To stop the containers and clean up database volumes:
+```bash
+./setup.sh
+```
+Choose option **`2`** (Stop Docker Compose).
+
+---
+
+## 💻 2. Host-Side Setup Guide (Local Mode)
+
+If you prefer to run the application natively on your operating system, follow this manual step-by-step guide.
+
+### Prerequisites
+Ensure the following tools are installed and in your environment PATH:
+- **JDK 17** (or 21)
+- **Apache Maven 3.8+**
+- **PostgreSQL 16+**
+- **WildFly 33.x**
+
+---
+
+### Step 1: Database Setup
+Start your local PostgreSQL service and run the database initialization script:
+```bash
+sudo -u postgres psql -f db/init.sql
+```
+This script creates:
+- Database: `digibank_db`
+- User: `digibank_user` (Password: `digibank_pwd`)
+- Role permissions.
+
+To verify the connection:
 ```bash
 psql -U digibank_user -d digibank_db -h localhost
 ```
 
-### 2. WildFly datasource
+---
 
-1. Place the PostgreSQL JDBC driver (`postgresql-42.7.x.jar`) and a `module.xml`
-   in `WILDFLY_HOME/modules/system/layers/base/org/postgresql/main/`.
-2. In `WILDFLY_HOME/standalone/configuration/standalone.xml`, declare the datasource
-   and driver:
+### Step 2: WildFly Server Setup
 
-```xml
-<datasource jndi-name="java:/jdbc/DigiBankDS" pool-name="DigiBankDS"
-            enabled="true" use-java-context="true">
-    <connection-url>jdbc:postgresql://localhost:5432/digibank_db</connection-url>
-    <driver>postgresql</driver>
-    <security user-name="digibank_user" password="digibank_pwd"/>
-</datasource>
+1. **PostgreSQL Driver Configuration**:
+   Create the directory `org/postgresql/main` inside WildFly's module directory:
+   ```bash
+   mkdir -p $WILDFLY_HOME/modules/system/layers/base/org/postgresql/main/
+   ```
+   Download and copy the JDBC driver jar (`postgresql-42.7.5.jar`) to this folder.
+   
+2. **Create Module Descriptor**:
+   Create a new file `module.xml` inside that directory:
+   ```xml
+   <?xml version="1.0" encoding="UTF-8"?>
+   <module xmlns="urn:jboss:module:1.5" name="org.postgresql">
+       <resources>
+           <resource-root path="postgresql-42.7.5.jar" />
+       </resources>
+       <dependencies>
+           <module name="javax.api" />
+           <module name="javax.transaction.api" />
+       </dependencies>
+   </module>
+   ```
 
-<driver name="postgresql" module="org.postgresql">
-    <driver-class>org.postgresql.Driver</driver-class>
-</driver>
-```
+3. **Declare Datasource in Standalone Config**:
+   Open `$WILDFLY_HOME/standalone/configuration/standalone.xml` and insert the datasource configuration inside the `<datasources>` subsystem:
+   ```xml
+   <datasource jndi-name="java:/jdbc/DigiBankDS" pool-name="DigiBankDS" enabled="true" use-java-context="true">
+       <connection-url>jdbc:postgresql://localhost:5432/digibank_db</connection-url>
+       <driver>postgresql</driver>
+       <security user-name="digibank_user" password="digibank_pwd"/>
+   </datasource>
+   ```
+   Under the `<drivers>` section, register the driver:
+   ```xml
+   <driver name="postgresql" module="org.postgresql">
+       <driver-class>org.postgresql.Driver</driver-class>
+   </driver>
+   ```
 
-3. Start WildFly and confirm the log line:
-   `Bound data source [java:/jdbc/DigiBankDS]`
+---
 
-```bash
-/path/to/wildfly/bin/standalone.sh   # Linux / macOS
-# or
-/path/to/wildfly/bin/standalone.bat   # Windows
-```
+### Step 3: Compile, Package, and Deploy
+Open a terminal in the project root:
+1. **Compile and run tests**:
+   ```bash
+   cd digibank-parent
+   mvn clean install
+   ```
+2. **Start your WildFly Server**:
+   ```bash
+   $WILDFLY_HOME/bin/standalone.sh
+   ```
+3. **Deploy the application**:
+   ```bash
+   mvn wildfly:deploy -pl digibank-app
+   ```
+4. **Access locally**: [http://localhost:8080/digibank-app](http://localhost:8080/digibank-app)
 
-## Build & Deploy
+---
 
-From the `digibank-parent` root:
+## 🧪 3. Quality Assurance (How to Run Tests)
 
-```bash
-# Full multi-module build
-mvn clean install
+The application has a robust unit and integration testing suite configured inside the `digibank-compliance` module.
 
-# Package the assembly WAR
-mvn -pl digibank-app clean package
-```
+### A. JUnit 5 Unit Tests
+These check the functional logic of the stateless compliance service:
+- Validates that amounts $\le 10000.0$ are accepted.
+- Validates that amounts $> 10000.0$ are rejected.
 
-### Option A — Manual deploy
+### B. Cucumber BDD Scenarios
+These run behavior validation using natural-language steps. The test features are located in [compliance.feature](file:///home/ariel/Desktop/udm/digibank-cloud-architecture-lab2/digibank-parent/digibank-compliance/src/test/resources/features/compliance.feature).
 
-```bash
-cp digibank-app/target/digibank-app.war \
-   /path/to/wildfly/standalone/deployments/
-```
+To run all tests from the root directory:
+1. Start `./setup.sh`.
+2. Choose option **`4`** (Run Maven Build & Tests).
+3. Alternatively, run via Maven:
+   ```bash
+   cd digibank-parent
+   mvn test -pl digibank-compliance
+   ```
 
-### Option B — Maven deploy (wildfly-maven-plugin)
+---
 
-1. Create a WildFly admin user:
+## 📡 4. REST API Endpoint Catalog
 
-```bash
-/path/to/wildfly/bin/add-user.sh
-# Type: Management User · username: admin · password: admin
-```
+All REST resources are exposed under the `/api` root path.
 
-2. Start WildFly, then from the project root:
+### 👥 Customer Resource (`/api/customers`)
+* **Create a Customer**:
+  - **Method**: `POST`
+  - **Request Body**:
+    ```json
+    {
+      "firstName": "Ali",
+      "lastName": "Diallo",
+      "email": "ali.diallo@digibank.com"
+    }
+    ```
+  - **Response (201 Created)**:
+    ```json
+    {
+      "id": 1,
+      "firstName": "Ali",
+      "lastName": "Diallo",
+      "email": "ali.diallo@digibank.com"
+    }
+    ```
 
-```bash
-mvn clean install wildfly:deploy
-```
+* **List Customers**:
+  - **Method**: `GET`
+  - **Response (200 OK)**: List of JSON customer objects.
 
-The application is available at:
-**http://localhost:8080/digibank-app**
+---
 
-## REST API
+### 💳 Account Resource (`/api/accounts`)
+* **Create an Account**:
+  - **Method**: `POST`
+  - **Request Body**:
+    ```json
+    {
+      "accountNumber": "ACC-001",
+      "balance": 1500.00
+    }
+    ```
+  - **Response (201 Created)**:
+    ```json
+    {
+      "accountNumber": "ACC-001",
+      "balance": 1500.0
+    }
+    ```
 
-Base URL: `http://localhost:8080/digibank-app/api/`
+* **List Accounts**:
+  - **Method**: `GET`
+  - **Response (200 OK)**: List of account objects.
 
-| Method | Endpoint | Description |
-| --- | --- | --- |
-| GET | `/api/index` | General information (landing page) |
-| POST | `/api/customers` | Create a customer |
-| GET | `/api/customers` | List all customers |
-| GET | `/api/customers/{id}` | Get a customer by id |
-| POST | `/api/accounts` | Create an account |
-| GET | `/api/accounts` | List all accounts |
-| POST | `/api/transactions` | Create a transaction |
-| GET | `/api/transactions` | List all transactions |
-| GET | `/api/compliance/validate/{amount}` | Validate a transaction amount (≤ 10 000) |
+---
 
-### Example
+### 💸 Transaction Resource (`/api/transactions`)
+* **Create a Transaction**:
+  - **Method**: `POST`
+  - **Request Body**:
+    ```json
+    {
+      "type": "DEPOSIT",
+      "amount": 5000.00
+    }
+    ```
+  - **Response (201 Created)**:
+    ```json
+    {
+      "type": "DEPOSIT",
+      "amount": 5000.0
+    }
+    ```
 
-```bash
-# Create a customer
-curl -X POST http://localhost:8080/digibank-app/api/customers \
-  -H "Content-Type: application/json" \
-  -d '{"firstName":"Ali","lastName":"Diallo","email":"ali.diallo@digibank.com"}'
+---
 
-# Compliance check
-curl http://localhost:8080/digibank-app/api/compliance/validate/5000
-curl http://localhost:8080/digibank-app/api/compliance/validate/25000
-```
+### 🛡 Compliance Resource (`/api/compliance`)
+* **Validate Transaction Amount**:
+  - **Method**: `GET`
+  - **Path**: `/api/compliance/validate/{amount}`
+  - **URL Examples**: 
+    - `/api/compliance/validate/5000` (Returns `{"valid":true}`)
+    - `/api/compliance/validate/25000` (Returns `{"valid":false}`)
 
-## Testing
+---
 
-### Unit tests (JUnit 5)
+## 🛠 5. Troubleshooting & Port Configurations
 
-```bash
-mvn test
-```
+If you see port conflict errors when running Docker Compose:
+- **Port 8080 or 8081 is busy**: The script binds WildFly HTTP to **`9090`** on your host. Make sure port `9090` is free.
+- **Port 5432 or 5433 is busy**: The script binds PostgreSQL to port **`5434`** on your host. Make sure port `5434` is free.
+- **Stop containers and release ports**:
+  Run:
+  ```bash
+  docker compose down -v
+  ```
 
-`ComplianceServiceTest` verifies:
-- `shouldAcceptAmountBelowLimit` — 5 000.0 is accepted
-- `shouldRejectAmountAboveLimit` — 20 000.0 is rejected
+---
 
-### BDD scenarios (Cucumber)
+## 📦 6. Deliverables Checklist (§14)
 
-Feature file: `src/test/resources/features/compliance.feature`
-
-```gherkin
-Feature: Transaction amount validation
-
-  Scenario: Amount as agreed
-    Given a transaction amount of 5000
-    When the compliance check is performed
-    Then the transaction is accepted
-
-  Scenario: Incorrect amount
-    Given a transaction amount of 20000
-    When the compliance check is performed
-    Then the transaction is rejected
-```
-
-Run with the Cucumber JUnit Platform suite runner `RunCucumberTest`.
-
-## Project Structure
-
-```
-.
-├── README.md
-├── UCC122-1_ Cloud architecture Lab 2 EN.pdf   # Lab specification
-├── digibank-parent/
-│   ├── pom.xml
-│   ├── digibank-shared/
-│   ├── digibank-customer/
-│   ├── digibank-account/
-│   ├── digibank-transaction/
-│   ├── digibank-compliance/
-│   ├── digibank-index/
-│   └── digibank-app/
-└── .gitignore
-```
-
-## Evaluation
-
-| Criterion | Weight |
-| --- | --- |
-| Environment installation & configuration | 10% |
-| Multi-module Maven structure | 15% |
-| Business module development | 30% |
-| PostgreSQL & WildFly configuration | 15% |
-| REST endpoints & application execution | 10% |
-| JUnit tests | 10% |
-| Cucumber scenarios | 10% |
-
-## Learning Outcomes
-
-- A1.1 Set up a complete Java/Jakarta EE development environment
-- A1.2 Create and configure a multi-module Maven project
-- A1.3 Structure a modular monolithic application around the domains
-      `shared`, `customer`, `account`, `transaction`, `compliance` and `index`
-- A1.4 Configure PostgreSQL and WildFly for application execution
-- A1.5 Develop REST entities, services, repositories and resources
-- A1.6 Run JUnit unit tests
-- A1.7 Write and launch BDD scenarios with Cucumber
-- A1.8 Deploy the application and verify that it is working correctly
-
-## Next Steps
-
-This first version prepares the ground for future work focusing on:
-- Enriching the business domain
-- Security
-- Technical documentation
-- Improving transactional robustness
-- Increasing software quality
-
-## License
-
-Academic coursework — University of the Mountains, Cloud Computing Professional License.
+Before submitting your lab deliverables, verify that you have packaged:
+1. `digibank-parent/` directory (including the 7 Maven child modules).
+2. The interactive script: `setup.sh`
+3. `db/init.sql` database configuration file.
+4. JUnit & Cucumber test files under `digibank-compliance/src/test`.
+5. CDI bean configurations (`beans.xml` in resources/META-INF directories).
+6. **[DEVELOPMENT_NOTES.md](file:///home/ariel/Desktop/udm/digibank-cloud-architecture-lab2/DEVELOPMENT_NOTES.md)** explaining the development order and difficulties.
