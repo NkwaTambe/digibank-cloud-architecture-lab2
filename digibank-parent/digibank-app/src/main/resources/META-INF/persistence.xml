@@ -5,6 +5,9 @@
              version="3.0">
     <persistence-unit name="digibankPU" transaction-type="JTA">
         <jta-data-source>java:/jdbc/DigiBankDS</jta-data-source>
+        <class>com.digibank.customer.model.Customer</class>
+        <class>com.digibank.account.model.Account</class>
+        <class>com.digibank.transaction.model.Transaction</class>
         <properties>
             <property name="jakarta.persistence.schema-generation.database.action" value="update" />
         </properties>

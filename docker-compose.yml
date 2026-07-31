@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16
+    container_name: digibank-db
+    environment:
+      - POSTGRES_DB=digibank_db
+      - POSTGRES_USER=digibank_user
+      - POSTGRES_PASSWORD=digibank_pwd
+    ports:
+      - "5434:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U digibank_user -d digibank_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  wildfly:
+    build:
+      context: .
+      dockerfile: Dockerfile.wildfly
+    container_name: digibank-app
+    ports:
+      - "9090:8080"
+      - "9999:9990"
+    volumes:
+      - ./digibank-parent/digibank-app/target/digibank-app.war:/opt/jboss/wildfly/standalone/deployments/digibank-app.war
+    depends_on:
+      db:
+        condition: service_healthy
+
+  adminer:
+    image: adminer:latest
+    container_name: digibank-adminer
+    ports:
+      - "8082:8080"
+    depends_on:
+      - db
+
+volumes:
+  pgdata:

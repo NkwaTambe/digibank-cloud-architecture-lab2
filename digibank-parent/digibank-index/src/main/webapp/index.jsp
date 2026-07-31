@@ -202,8 +202,9 @@ font-size: 12px;
 </div>
 
 <div class="links">
-<a href="http://localhost:8080/digibank-app/api/" class="btn btn-primary">REST API</a>
-<a href="<%= request.getContextPath() %>/docs" class="btn btn-secondary">Documentation (Soon)</a>
+<a href="<%= request.getContextPath() %>/api" class="btn btn-primary">REST API Root</a>
+<a href="<%= request.getContextPath() %>/swagger.html" class="btn btn-secondary">Swagger API Playground</a>
+<a href="http://localhost:8082" class="btn btn-secondary" target="_blank">Adminer DB Console</a>
 </div>
 
 <footer>

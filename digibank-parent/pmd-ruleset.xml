@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<ruleset name="Custom PMD Ruleset"
+    xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+
+    <description>Custom PMD ruleset for Digi Bank modular monolith</description>
+
+    <!-- Import errorprone ruleset -->
+    <rule ref="category/java/errorprone.xml"/>
+
+    <!-- Import bestpractices ruleset and exclude AbstractClassWithoutAbstractMethod -->
+    <rule ref="category/java/bestpractices.xml">
+        <exclude name="AbstractClassWithoutAbstractMethod"/>
+    </rule>
+</ruleset>
