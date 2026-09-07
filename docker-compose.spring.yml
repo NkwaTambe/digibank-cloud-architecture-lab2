@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16
+    container_name: digibank-spring-db
+    environment:
+      - POSTGRES_DB=digibank_db
+      - POSTGRES_USER=digibank_user
+      - POSTGRES_PASSWORD=digibank_pwd
+    ports:
+      - "5435:5432"
+    volumes:
+      - pgdata-spring:/var/lib/postgresql/data
+      - ./db/init-spring.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U digibank_user -d digibank_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  wildfly:
+    build:
+      context: .
+      dockerfile: Dockerfile.wildfly
+    container_name: digibank-spring-app
+    ports:
+      - "9091:8080"
+      - "9991:9990"
+    volumes:
+      - ./digibank-parent-spring/digibank-app/target/digibank-app.war:/opt/jboss/wildfly/standalone/deployments/digibank-app.war
+    depends_on:
+      db:
+        condition: service_healthy
+
+  adminer:
+    image: adminer:latest
+    container_name: digibank-spring-adminer
+    ports:
+      - "8083:8080"
+    depends_on:
+      - db
+
+volumes:
+  pgdata-spring:
