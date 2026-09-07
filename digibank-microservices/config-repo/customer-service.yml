@@ -1,0 +1,9 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: jdbc:postgresql://customer-db:5432/digibank_customer_db
+    username: digibankuser
+    password: digibankpwd
+    driver-class-name: org.postgresql.Driver

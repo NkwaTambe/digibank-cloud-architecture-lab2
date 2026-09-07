@@ -1,0 +1,9 @@
+server:
+  port: 8084
+
+spring:
+  datasource:
+    url: jdbc:postgresql://compliance-db:5432/digibank_compliance_db
+    username: digibankuser
+    password: digibankpwd
+    driver-class-name: org.postgresql.Driver
