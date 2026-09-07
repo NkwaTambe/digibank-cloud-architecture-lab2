@@ -4,8 +4,8 @@ server:
 spring:
   datasource:
     url: jdbc:postgresql://transaction-db:5432/digibank_transaction_db
-    username: digibankuser
-    password: digibankpwd
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
 resilience4j:

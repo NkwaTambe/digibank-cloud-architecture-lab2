@@ -172,6 +172,7 @@ Useful URLs:
 | Component | URL |
 |---|---|
 | API Gateway | `http://localhost:8080` |
+| Microservices Portal (landing page) | `http://localhost:8080` (served by the gateway, links to every Swagger UI) |
 | Eureka Dashboard | `http://localhost:8761` |
 | Config Server | `http://localhost:8888` |
 | Customer service | `http://localhost:8081/customers` |
@@ -179,6 +180,21 @@ Useful URLs:
 | Transaction service | `http://localhost:8083/transactions` |
 | Compliance service | `http://localhost:8084/compliance/validate/5000` |
 | Notification service | `http://localhost:8085/notifications` |
+
+### Interactive API documentation (Swagger / OpenAPI)
+
+Each service publishes an OpenAPI 3 spec via Springdoc. Swagger UI is reachable per service and through the portal:
+
+| Component | Swagger UI | OpenAPI JSON |
+|---|---|---|
+| API Gateway | `http://localhost:8080/swagger-ui.html` | `http://localhost:8080/v3/api-docs` |
+| Customer service | `http://localhost:8081/swagger-ui.html` | `http://localhost:8081/v3/api-docs` |
+| Account service | `http://localhost:8082/swagger-ui.html` | `http://localhost:8082/v3/api-docs` |
+| Transaction service | `http://localhost:8083/swagger-ui.html` | `http://localhost:8083/v3/api-docs` |
+| Compliance service | `http://localhost:8084/swagger-ui.html` | `http://localhost:8084/v3/api-docs` |
+| Notification service | `http://localhost:8085/swagger-ui.html` | `http://localhost:8085/v3/api-docs` |
+
+> The API gateway serves a small landing page at `/` that describes the architecture and links to every service's Swagger UI.
 
 ## 9. Example API Checks
 

@@ -98,6 +98,8 @@ services:
     environment:
       SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
+      DB_USERNAME: ${DB_USERNAME:-digibankuser}
+      DB_PASSWORD: ${DB_PASSWORD:-digibankpwd}
 
   account-service:
     build:
@@ -112,6 +114,8 @@ services:
     environment:
       SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
+      DB_USERNAME: ${DB_USERNAME:-digibankuser}
+      DB_PASSWORD: ${DB_PASSWORD:-digibankpwd}
 
   transaction-service:
     build:
@@ -127,6 +131,8 @@ services:
     environment:
       SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
+      DB_USERNAME: ${DB_USERNAME:-digibankuser}
+      DB_PASSWORD: ${DB_PASSWORD:-digibankpwd}
 
   compliance-service:
     build:
@@ -141,6 +147,8 @@ services:
     environment:
       SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
+      DB_USERNAME: ${DB_USERNAME:-digibankuser}
+      DB_PASSWORD: ${DB_PASSWORD:-digibankpwd}
 
   notification-service:
     build:
@@ -155,6 +163,8 @@ services:
     environment:
       SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
+      DB_USERNAME: ${DB_USERNAME:-digibankuser}
+      DB_PASSWORD: ${DB_PASSWORD:-digibankpwd}
 
 volumes:
   customer_data:

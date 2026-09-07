@@ -4,6 +4,6 @@ server:
 spring:
   datasource:
     url: jdbc:postgresql://compliance-db:5432/digibank_compliance_db
-    username: digibankuser
-    password: digibankpwd
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver

@@ -8,12 +8,18 @@ spring:
     import: optional:configserver:http://localhost:8888
   datasource:
     url: jdbc:postgresql://localhost:5436/digibank_compliance_db
-    username: digibankuser
-    password: digibankpwd
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: update
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
 
 eureka:
   client:
