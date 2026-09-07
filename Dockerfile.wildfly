@@ -5,7 +5,7 @@ COPY --chown=jboss:jboss postgresql-42.7.5.jar /tmp/
 
 # Create and execute offline CLI script to configure driver and datasource
 RUN echo "embed-server --server-config=standalone.xml" > /tmp/config.cli && \
-    echo "module add --name=org.postgresql --resources=/tmp/postgresql-42.7.5.jar --dependencies=javax.api,javax.transaction.api" >> /tmp/config.cli && \
+    echo "module add --name=org.postgresql --resources=/tmp/postgresql-42.7.5.jar --dependencies=java.sql,jakarta.transaction.api" >> /tmp/config.cli && \
     echo "/subsystem=datasources/jdbc-driver=postgresql:add(driver-name=postgresql,driver-module-name=org.postgresql,driver-class-name=org.postgresql.Driver)" >> /tmp/config.cli && \
     echo "/subsystem=datasources/data-source=DigiBankDS:add(jndi-name=java:/jdbc/DigiBankDS,driver-name=postgresql,connection-url=jdbc:postgresql://db:5432/digibank_db,user-name=digibank_user,password=digibank_pwd,enabled=true,use-java-context=true)" >> /tmp/config.cli && \
     /opt/jboss/wildfly/bin/jboss-cli.sh --file=/tmp/config.cli && \

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Digi Bank - PMD Ruleset Configuration
+    UCC 122-1 Cloud Architecture Lab 2
+    
+    Custom ruleset for Jakarta EE modular monolith application
+-->
+<ruleset name="DigiBank PMD Ruleset"
+         xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+
+    <description>
+        PMD Ruleset for Digi Bank Cloud Architecture Lab 2
+        Focuses on code quality, security, and Jakarta EE best practices
+    </description>
+
+    <!-- Best Practices Rules -->
+    <rule ref="category/java/bestpractices.xml">
+        <exclude name="GuardLogStatement"/>
+        <exclude name="JUnitAssertionsShouldIncludeMessage"/>
+    </rule>
+
+    <!-- Code Style Rules -->
+    <rule ref="category/java/codestyle.xml">
+        <exclude name="AtLeastOneConstructor"/>
+        <exclude name="CommentDefaultAccessModifier"/>
+        <exclude name="LocalVariableCouldBeFinal"/>
+        <exclude name="MethodArgumentCouldBeFinal"/>
+        <exclude name="OnlyOneReturn"/>
+        <exclude name="ShortVariable"/>
+        <exclude name="LongVariable"/>
+    </rule>
+
+    <!-- Design Rules -->
+    <rule ref="category/java/design.xml">
+        <exclude name="LawOfDemeter"/>
+        <exclude name="UseObjectForClearerAPI"/>
+        <exclude name="LoosePackageCoupling"/>
+    </rule>
+
+    <!-- Documentation Rules -->
+    <rule ref="category/java/documentation.xml">
+        <exclude name="CommentRequired"/>
+        <exclude name="CommentSize"/>
+    </rule>
+
+    <!-- Error Prone Rules -->
+    <rule ref="category/java/errorprone.xml">
+        <exclude name="BeanMembersShouldSerialize"/>
+        <exclude name="DataflowAnomalyAnalysis"/>
+        <exclude name="DoNotCallGarbageCollectionExplicitly"/>
+        <exclude name="NullAssignment"/>
+    </rule>
+
+    <!-- Multithreading Rules -->
+    <rule ref="category/java/multithreading.xml">
+        <exclude name="UseConcurrentHashMap"/>
+    </rule>
+
+    <!-- Performance Rules -->
+    <rule ref="category/java/performance.xml">
+        <exclude name="AvoidInstantiatingObjectsInLoops"/>
+    </rule>
+
+    <!-- Security Rules -->
+    <rule ref="category/java/security.xml"/>
+
+    <!-- Additional specific rules for Jakarta EE -->
+    <rule ref="category/java/errorprone.xml/CloseResource">
+        <properties>
+            <property name="closeTargets" value="close,shutdown,shutdownNow"/>
+        </properties>
+    </rule>
+
+    <rule ref="category/java/design.xml/UseUtilityClass">
+        <properties>
+            <property name="violationSuppressRegex" value=".*(Test|Steps|Resource|Service|Repository|Servlet)"/> 
+        </properties>
+    </rule>
+
+    <!-- Custom rule: Avoid print statements in production code -->
+    <rule ref="category/java/bestpractices.xml/SystemPrintln"/>
+
+</ruleset>
