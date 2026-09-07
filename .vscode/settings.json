@@ -14,5 +14,6 @@
   "java.import.maven.enabled": true,
   "java.test.config": {
     "workingDirectory": "${workspaceFolder}"
-  }
+  },
+  "java.compile.nullAnalysis.mode": "automatic"
 }
