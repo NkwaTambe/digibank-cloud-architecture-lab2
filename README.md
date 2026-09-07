@@ -8,6 +8,15 @@
 
 ---
 
+## Lab Documents
+
+- [Lab 1 Architecture Foundation](docs/lab1-architecture.md)
+- [Lab 2 Architecture, Design & Patterns](docs/api_and_architecture.md)
+- [Testing & User Guide](docs/TESTING_AND_USER_GUIDE.md)
+- [Development Notes](docs/DEVELOPMENT_NOTES.md)
+
+---
+
 ## 📌 Introduction
 
 Welcome to the **Digi Bank Modular Monolith** codebase! This project is a complete guide to developing, testing, deploying, and containerizing a modular monolithic banking application using **Jakarta EE 10**, **Hibernate/JPA**, **PostgreSQL**, and **WildFly 33**. 
