@@ -34,8 +34,8 @@ services:
     image: postgres:16
     environment:
       POSTGRES_DB: digibank_customer_db
-      POSTGRES_USER: digibankuser
-      POSTGRES_PASSWORD: digibankpwd
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - "5433:5432"
     volumes:
@@ -45,8 +45,8 @@ services:
     image: postgres:16
     environment:
       POSTGRES_DB: digibank_account_db
-      POSTGRES_USER: digibankuser
-      POSTGRES_PASSWORD: digibankpwd
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - "5438:5432"
     volumes:
@@ -56,8 +56,8 @@ services:
     image: postgres:16
     environment:
       POSTGRES_DB: digibank_transaction_db
-      POSTGRES_USER: digibankuser
-      POSTGRES_PASSWORD: digibankpwd
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - "5435:5432"
     volumes:
@@ -67,8 +67,8 @@ services:
     image: postgres:16
     environment:
       POSTGRES_DB: digibank_compliance_db
-      POSTGRES_USER: digibankuser
-      POSTGRES_PASSWORD: digibankpwd
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - "5436:5432"
     volumes:
@@ -78,8 +78,8 @@ services:
     image: postgres:16
     environment:
       POSTGRES_DB: digibank_notification_db
-      POSTGRES_USER: digibankuser
-      POSTGRES_PASSWORD: digibankpwd
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - "5437:5432"
     volumes:
@@ -98,8 +98,8 @@ services:
     environment:
       SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
-      DB_USERNAME: ${DB_USERNAME:-digibankuser}
-      DB_PASSWORD: ${DB_PASSWORD:-digibankpwd}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
 
   account-service:
     build:
@@ -114,8 +114,8 @@ services:
     environment:
       SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
-      DB_USERNAME: ${DB_USERNAME:-digibankuser}
-      DB_PASSWORD: ${DB_PASSWORD:-digibankpwd}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
 
   transaction-service:
     build:
@@ -131,8 +131,8 @@ services:
     environment:
       SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
-      DB_USERNAME: ${DB_USERNAME:-digibankuser}
-      DB_PASSWORD: ${DB_PASSWORD:-digibankpwd}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
 
   compliance-service:
     build:
@@ -147,8 +147,8 @@ services:
     environment:
       SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
-      DB_USERNAME: ${DB_USERNAME:-digibankuser}
-      DB_PASSWORD: ${DB_PASSWORD:-digibankpwd}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
 
   notification-service:
     build:
@@ -163,8 +163,8 @@ services:
     environment:
       SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
-      DB_USERNAME: ${DB_USERNAME:-digibankuser}
-      DB_PASSWORD: ${DB_PASSWORD:-digibankpwd}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
 
 volumes:
   customer_data:
