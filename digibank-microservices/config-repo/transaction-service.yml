@@ -1,0 +1,22 @@
+server:
+  port: 8083
+
+spring:
+  datasource:
+    url: jdbc:postgresql://transaction-db:5432/digibank_transaction_db
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      compliance-service:
+        sliding-window-size: 5
+        failure-rate-threshold: 50
+      account-service:
+        sliding-window-size: 5
+        failure-rate-threshold: 50
+      notification-service:
+        sliding-window-size: 5
+        failure-rate-threshold: 50

@@ -1,0 +1,9 @@
+server:
+  port: 8085
+
+spring:
+  datasource:
+    url: jdbc:postgresql://notification-db:5432/digibank_notification_db
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver

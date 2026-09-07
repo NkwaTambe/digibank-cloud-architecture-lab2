@@ -12,6 +12,7 @@
 
 - [Lab 1 Architecture Foundation](docs/lab1-architecture.md)
 - [Lab 2 Architecture, Design & Patterns](docs/api_and_architecture.md)
+- [Lab 4 Microservices Architecture](digibank-microservices/docs/lab4-microservices-architecture.md)
 - [Testing & User Guide](docs/TESTING_AND_USER_GUIDE.md)
 - [Development Notes](docs/DEVELOPMENT_NOTES.md)
 
