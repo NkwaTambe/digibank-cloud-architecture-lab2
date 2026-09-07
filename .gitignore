@@ -27,6 +27,10 @@ Thumbs.db
 # Logs
 *.log
 
+# Environment / secrets
+.env
+**/.env
+
 # WildFly / Maven
 wildfly-*/
 .mvn/wrapper/maven-wrapper.jar

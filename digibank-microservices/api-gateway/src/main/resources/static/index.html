@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digi Bank · Microservices Portal</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --border: #334155;
+            --accent: #38bdf8;
+            --accent-2: #818cf8;
+            --text: #e2e8f0;
+            --muted: #94a3b8;
+            --ok: #34d399;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(160deg, var(--bg) 0%, #1e293b 100%);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+            padding: 2rem 1.5rem;
+        }
+        .wrap { max-width: 1080px; margin: 0 auto; }
+        header { text-align: center; margin-bottom: 2.5rem; }
+        header .logo { font-size: 2.2rem; font-weight: 800; letter-spacing: 1px; }
+        header .logo span { color: var(--accent); }
+        header p { color: var(--muted); max-width: 720px; margin: 0.75rem auto 0; }
+        .badges { display: flex; gap: .5rem; justify-content: center; flex-wrap: wrap; margin-top: 1rem; }
+        .badge {
+            font-size: .75rem; font-weight: 600; padding: .3rem .7rem; border-radius: 999px;
+            border: 1px solid var(--border); background: var(--card); color: var(--accent-2);
+        }
+        h2 { font-size: 1.15rem; margin: 2rem 0 1rem; color: var(--accent); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
+        .card {
+            background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+            padding: 1.25rem; display: flex; flex-direction: column; gap: .5rem;
+        }
+        .card h3 { font-size: 1.05rem; color: #fff; }
+        .card .port { color: var(--muted); font-size: .8rem; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+        .card p { color: var(--muted); font-size: .88rem; flex: 1; }
+        .card a {
+            align-self: flex-start; text-decoration: none; font-weight: 600; font-size: .85rem;
+            color: #0f172a; background: linear-gradient(90deg, var(--accent), var(--accent-2));
+            padding: .45rem .85rem; border-radius: 8px;
+        }
+        .card a:hover { filter: brightness(1.1); }
+        .infra { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .infra .card { flex: 1; min-width: 200px; }
+        .endpoints { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.25rem; }
+        .endpoints ul { list-style: none; }
+        .endpoints li { padding: .4rem 0; border-bottom: 1px solid var(--border); font-family: ui-monospace, Menlo, monospace; font-size: .85rem; }
+        .endpoints li:last-child { border-bottom: 0; }
+        .endpoints code { color: var(--ok); }
+        footer { text-align: center; color: var(--muted); font-size: .8rem; margin-top: 3rem; }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <header>
+        <div class="logo">🏦 Digi<span>Bank</span></div>
+        <p>
+            Cloud Architecture Lab 4 — a Spring Boot microservices architecture with service discovery,
+            centralized configuration, API gateway routing, resilience, a transfer Saga, and CQRS read/write separation.
+            Use the links below to open each service's interactive Swagger UI.
+        </p>
+        <div class="badges">
+            <span class="badge">Spring Boot 3.4</span>
+            <span class="badge">Eureka Discovery</span>
+            <span class="badge">Spring Cloud Config</span>
+            <span class="badge">Spring Cloud Gateway</span>
+            <span class="badge">Resilience4j</span>
+            <span class="badge">OpenAPI 3 / Swagger</span>
+        </div>
+    </header>
+
+    <h2>🛰 Infrastructure Components</h2>
+    <div class="infra">
+        <div class="card">
+            <h3>API Gateway</h3>
+            <div class="port">:8080 · Single entry point</div>
+            <p>Routes every client request to the right microservice.</p>
+            <a href="/swagger-ui.html">Open Swagger UI</a>
+        </div>
+        <div class="card">
+            <h3>Eureka Discovery</h3>
+            <div class="port">:8761 · Registry</div>
+            <p>Service registry where every instance registers and is discovered.</p>
+            <a href="http://localhost:8761">Open Dashboard</a>
+        </div>
+        <div class="card">
+            <h3>Config Server</h3>
+            <div class="port">:8888 · Central config</div>
+            <p>Serves shared configuration from the <code>config-repo</code>.</p>
+            <a href="http://localhost:8888">Open Config</a>
+        </div>
+    </div>
+
+    <h2>⚙️ Business Services</h2>
+    <div class="grid">
+        <div class="card">
+            <h3>Customer Service</h3>
+            <div class="port">:8081 · digibank_customer_db</div>
+            <p>Customer registration and consultation.</p>
+            <a href="http://localhost:8081/swagger-ui.html">Open Swagger UI</a>
+        </div>
+        <div class="card">
+            <h3>Account Service</h3>
+            <div class="port">:8082 · digibank_account_db</div>
+            <p>Account creation, balance, debit and credit.</p>
+            <a href="http://localhost:8082/swagger-ui.html">Open Swagger UI</a>
+        </div>
+        <div class="card">
+            <h3>Transaction Service</h3>
+            <div class="port">:8083 · digibank_transaction_db</div>
+            <p>Transaction creation, transfers (Saga) and CQRS reads.</p>
+            <a href="http://localhost:8083/swagger-ui.html">Open Swagger UI</a>
+        </div>
+        <div class="card">
+            <h3>Compliance Service</h3>
+            <div class="port">:8084 · digibank_compliance_db</div>
+            <p>Amount validation and future KYC/AML rules.</p>
+            <a href="http://localhost:8084/swagger-ui.html">Open Swagger UI</a>
+        </div>
+        <div class="card">
+            <h3>Notification Service</h3>
+            <div class="port">:8085 · digibank_notification_db</div>
+            <p>Business notifications after sensitive operations.</p>
+            <a href="http://localhost:8085/swagger-ui.html">Open Swagger UI</a>
+        </div>
+    </div>
+
+    <h2>🔌 Sample Endpoints</h2>
+    <div class="endpoints">
+        <ul>
+            <li><code>POST</code> /api/customers — create a customer</li>
+            <li><code>GET</code>  /api/customers — list customers</li>
+            <li><code>POST</code> /api/accounts — create an account</li>
+            <li><code>POST</code> /api/accounts/{id}/debit — debit an account</li>
+            <li><code>POST</code> /api/accounts/{id}/credit — credit an account</li>
+            <li><code>POST</code> /api/transactions — create a transaction</li>
+            <li><code>POST</code> /api/transactions/transfers — execute a Saga transfer</li>
+            <li><code>GET</code>  /api/transactions — list transactions (CQRS read)</li>
+            <li><code>GET</code>  /api/compliance/validate/5000 — validate an amount</li>
+            <li><code>GET</code>  /api/notifications — list notifications</li>
+        </ul>
+    </div>
+
+    <footer>
+        Digi Bank · UCC 122-1 Cloud Architecture · Lab 4 Microservices — June 2026
+    </footer>
+</div>
+</body>
+</html>

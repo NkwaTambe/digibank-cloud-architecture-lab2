@@ -1,0 +1,30 @@
+name: Digi Bank Lab 4 Microservices CI
+
+on:
+  push:
+    branches: ["main", "lab4-microservices"]
+    paths:
+      - "digibank-microservices/**"
+      - ".github/workflows/lab4-microservices-ci.yml"
+  pull_request:
+    paths:
+      - "digibank-microservices/**"
+      - ".github/workflows/lab4-microservices-ci.yml"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      - name: Build and test Lab 4 microservices
+        run: mvn -f digibank-microservices/pom.xml test
