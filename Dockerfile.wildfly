@@ -1,5 +1,9 @@
 FROM quay.io/wildfly/wildfly:33.0.2.Final-jdk17
 
+ARG WAR_PATH=digibank-parent/digibank-app/target/digibank-app.war
+
+COPY --chown=jboss:jboss ${WAR_PATH} /opt/jboss/wildfly/standalone/deployments/digibank-app.war
+
 # Copy the PostgreSQL JDBC driver and make jboss the owner
 COPY --chown=jboss:jboss postgresql-42.7.5.jar /tmp/
 
