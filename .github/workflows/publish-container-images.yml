@@ -2,7 +2,7 @@ name: Publish DigiBank Container Images
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "feature/publish-ghcr-images"]
   workflow_dispatch:
 
 permissions:
