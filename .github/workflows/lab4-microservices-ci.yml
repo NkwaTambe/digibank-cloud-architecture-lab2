@@ -1,24 +1,33 @@
 name: Digi Bank Lab 4 Microservices CI
 
+# This workflow validates the Lab 4 microservices version of DigiBank.
+# It focuses only on digibank-microservices so Lab 4 changes can be checked quickly.
 on:
+  # Run when Lab 4 code is pushed to main or the lab4-microservices branch.
   push:
     branches: ["main", "lab4-microservices"]
+    # Only run this workflow when microservices files or this CI file change.
     paths:
       - "digibank-microservices/**"
       - ".github/workflows/lab4-microservices-ci.yml"
+  # Run the same checks for pull requests that touch the microservices project.
   pull_request:
     paths:
       - "digibank-microservices/**"
       - ".github/workflows/lab4-microservices-ci.yml"
 
 jobs:
+  # Build and test the complete Spring Cloud microservices Maven reactor.
   build:
     runs-on: ubuntu-latest
 
     steps:
+      # Download the repository source code into the GitHub Actions runner.
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Install Java 17 because all microservices are compiled for JDK 17.
+      # Maven caching makes repeated CI runs faster.
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -26,5 +35,8 @@ jobs:
           java-version: "17"
           cache: maven
 
+      # Run tests for every Lab 4 service module.
+      # This checks customer, account, transaction, compliance, notification,
+      # gateway/config/discovery compilation, and service-level unit tests.
       - name: Build and test Lab 4 microservices
         run: mvn -f digibank-microservices/pom.xml test
