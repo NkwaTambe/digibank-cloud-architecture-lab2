@@ -13,6 +13,7 @@
 - [Lab 1 Architecture Foundation](docs/lab1-architecture.md)
 - [Lab 2 Architecture, Design & Patterns](docs/api_and_architecture.md)
 - [Lab 4 Microservices Architecture](digibank-microservices/docs/lab4-microservices-architecture.md)
+- [Labs 1–4 Comprehensive Architectural Comparison & Guide](docs/architectural_comparison.md)
 - [Testing & User Guide](docs/testing_and_user_guide.md)
 - [Development Notes](docs/development_notes.md)
 
@@ -63,16 +64,33 @@ docker --version
 docker compose version
 ```
 
+### Startup Scripts Overview
+
+The codebase provides interactive setup scripts for all 3 architectural iterations:
+
+| Architecture | Script | Description |
+|---|---|---|
+| **Lab 2: Modular Monolith (Jakarta EE)** | `./setup.sh` | WildFly 33 + Jakarta EE 10 + PostgreSQL |
+| **Lab 3: Modular Monolith (Spring Boot)** | `./setup-spring.sh` | WildFly 33 + Spring Boot 3.5 + PostgreSQL |
+| **Lab 4: Distributed Microservices** | `./setup-microservices.sh` | Spring Boot 3.4 + Eureka + Config Server + Gateway + PostgreSQL |
+
 ### Step 1: Run the Control Center
-From the root of the project directory, execute the interactive script:
+From the root of the project directory, execute the interactive script for your target architecture:
 ```bash
+# For Lab 4 Microservices (Recommended)
+./setup-microservices.sh
+
+# For Lab 3 Spring Boot Monolith
+./setup-spring.sh
+
+# For Lab 2 Jakarta EE Monolith
 ./setup.sh
 ```
 
 ### Step 2: Choose Option 1 (Docker Compose)
 When the menu loads, type **`1`** and press **Enter**:
 ```text
-  Enter choice (1-9): 1
+  Enter choice (1-6): 1
 ```
 
 ### Step 3: What Happens Under the Hood
