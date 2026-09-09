@@ -36,7 +36,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set image namespace
-        run: echo "IMAGE_NAMESPACE=ghcr.io/$(echo \"${GITHUB_REPOSITORY_OWNER}\" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_ENV"
+        run: echo "IMAGE_NAMESPACE=ghcr.io/$(printf '%s' "$GITHUB_REPOSITORY_OWNER" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_ENV"
 
       - name: Download PostgreSQL JDBC driver
         run: curl --fail --location --output postgresql-42.7.5.jar https://jdbc.postgresql.org/download/postgresql-42.7.5.jar
