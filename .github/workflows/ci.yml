@@ -1,20 +1,30 @@
 name: Java CI/CD Pipeline with Quality Gates
 
+# This workflow validates the Lab 2 Jakarta EE / WildFly version of DigiBank.
+# It proves that the modular monolith can compile, pass tests, pass code-quality
+# checks, produce a WAR file, and build inside Docker.
 on:
+  # Run the pipeline when code is pushed to the main classroom branches.
   push:
     branches: [ "main", "develop" ]
+  # Run the same checks before merging a pull request into those branches.
   pull_request:
     branches: [ "main", "develop" ]
 
 jobs:
+  # First job: compile the Jakarta EE Maven reactor, run quality tools, run tests,
+  # and save reports/artifacts so they can be reviewed after the CI run.
   build-and-quality:
     name: Build, Test and Quality Checks
     runs-on: ubuntu-latest
 
     steps:
+    # Download the repository source code into the GitHub Actions runner.
     - name: Checkout repository
       uses: actions/checkout@v4
 
+    # Install Java 17 because the project is compiled for JDK 17.
+    # The Maven cache speeds up later CI runs by reusing downloaded dependencies.
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
@@ -22,30 +32,40 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
+    # Build every module and install them into the runner's local Maven repository.
+    # Tests are skipped here because there is a separate test step below.
     - name: Build and Install
       run: |
         echo "::group::Building and Installing Modules"
         mvn -B clean install -DskipTests --file digibank-parent/pom.xml
         echo "::endgroup::"
 
+    # Checkstyle verifies formatting and coding-style rules from checkstyle.xml.
+    # This helps prove the code follows the expected Java style.
     - name: Run Checkstyle
       run: |
         echo "::group::Running Checkstyle Analysis"
         mvn -B checkstyle:check --file digibank-parent/pom.xml
         echo "::endgroup::"
 
+    # PMD performs static code analysis.
+    # It looks for common Java problems such as unused code or risky patterns.
     - name: Run PMD Analysis
       run: |
         echo "::group::Running PMD Static Analysis"
         mvn -B pmd:check --file digibank-parent/pom.xml
         echo "::endgroup::"
 
+    # Run the automated tests for the Jakarta EE monolith.
+    # In this project that includes JUnit tests and Cucumber BDD scenarios.
     - name: Run Tests
       run: |
         echo "::group::Running JUnit and Cucumber Tests"
         mvn -B test --file digibank-parent/pom.xml
         echo "::endgroup::"
 
+    # Upload quality reports even if a previous step fails.
+    # These files help explain exactly why a CI run failed.
     - name: Upload Quality Reports
       if: always()
       uses: actions/upload-artifact@v4
@@ -59,6 +79,8 @@ jobs:
           digibank-parent/**/target/site/
         retention-days: 30
 
+    # Upload test reports even if tests fail.
+    # The Surefire/Failsafe reports show which tests passed or failed.
     - name: Upload Test Results
       if: always()
       uses: actions/upload-artifact@v4
@@ -69,6 +91,8 @@ jobs:
           digibank-parent/**/target/failsafe-reports/
         retention-days: 30
 
+    # Save the generated WAR file.
+    # This proves CI produced a deployable WildFly application artifact.
     - name: Upload Build Artifacts
       uses: actions/upload-artifact@v4
       with:
@@ -77,15 +101,19 @@ jobs:
           digibank-parent/digibank-app/target/*.war
         retention-days: 7
 
+  # Second job: run Maven's full verify lifecycle after the first job passes.
+  # This is a stronger final check before considering the code stable.
   full-verify:
     name: Full Maven Verify
     runs-on: ubuntu-latest
     needs: build-and-quality
 
     steps:
+    # Download the repository source code again because each job gets a fresh runner.
     - name: Checkout repository
       uses: actions/checkout@v4
 
+    # Install Java 17 for the full verification job.
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
@@ -93,24 +121,32 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
+    # Run the full Maven verification lifecycle.
+    # This includes compilation, tests, and the configured quality checks.
     - name: Run Full Maven Verify
       run: |
         echo "::group::Running Full Maven Verify (includes SpotBugs, PMD, Checkstyle)"
         mvn -B clean verify --file digibank-parent/pom.xml
         echo "::endgroup::"
 
+  # Third job: prove the application can be packaged into the WildFly Docker image.
+  # This does not deploy to production; it only checks that container build files work.
   docker-build:
     name: Docker Build Test
     runs-on: ubuntu-latest
     needs: build-and-quality
 
     steps:
+    # Download the repository source code into the Docker build runner.
     - name: Checkout repository
       uses: actions/checkout@v4
 
+    # Enable Docker Buildx, the modern Docker builder used by GitHub Actions.
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
+    # Download the PostgreSQL JDBC driver required by the WildFly Docker image.
+    # WildFly needs this driver to connect the app to PostgreSQL.
     - name: Download PostgreSQL JDBC Driver
       run: |
         echo "::group::Downloading PostgreSQL JDBC Driver"
@@ -118,12 +154,16 @@ jobs:
         ls -la postgresql-42.7.5.jar
         echo "::endgroup::"
 
+    # Bring back the WAR file created in the build-and-quality job.
+    # The Docker image needs the WAR so it can deploy DigiBank into WildFly.
     - name: Download Build Artifact
       uses: actions/download-artifact@v4
       with:
         name: build-artifacts
         path: digibank-parent/digibank-app/target/
 
+    # Build the WildFly image using Dockerfile.wildfly.
+    # If this step passes, the app can be containerized for deployment.
     - name: Build Docker Image
       run: |
         echo "::group::Building WildFly Docker Image"
@@ -134,6 +174,8 @@ jobs:
         docker images digibank-app:test
         echo "::endgroup::"
 
+    # Validate the root docker-compose.yml syntax.
+    # This catches configuration mistakes before someone tries to run the demo.
     - name: Test Docker Compose
       run: |
         echo "::group::Testing Docker Compose Configuration"

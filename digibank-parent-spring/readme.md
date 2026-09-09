@@ -133,4 +133,4 @@ curl -X POST http://localhost:9091/digibank-app/api/customers \
 5. Spring Boot Java classes (entities, repositories, services, controllers).
 6. JUnit tests.
 7. Cucumber scenarios.
-8. `docs/DEVELOPMENT_NOTES_SPRING.md` — development order and difficulties.
+8. `docs/development_notes_spring.md` — development order and difficulties.

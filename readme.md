@@ -13,8 +13,8 @@
 - [Lab 1 Architecture Foundation](docs/lab1-architecture.md)
 - [Lab 2 Architecture, Design & Patterns](docs/api_and_architecture.md)
 - [Lab 4 Microservices Architecture](digibank-microservices/docs/lab4-microservices-architecture.md)
-- [Testing & User Guide](docs/TESTING_AND_USER_GUIDE.md)
-- [Development Notes](docs/DEVELOPMENT_NOTES.md)
+- [Testing & User Guide](docs/testing_and_user_guide.md)
+- [Development Notes](docs/development_notes.md)
 
 ---
 
@@ -332,4 +332,4 @@ Before submitting your lab deliverables, verify that you have packaged:
 3. `db/init.sql` database configuration file.
 4. JUnit & Cucumber test files under `digibank-compliance/src/test`.
 5. CDI bean configurations (`beans.xml` in resources/META-INF directories).
-6. **[DEVELOPMENT_NOTES.md](file:///home/ariel/Desktop/udm/digibank-cloud-architecture-lab2/DEVELOPMENT_NOTES.md)** explaining the development order and difficulties.
+6. **[development_notes.md](docs/development_notes.md)** explaining the development order and difficulties.
