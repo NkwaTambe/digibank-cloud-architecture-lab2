@@ -194,6 +194,38 @@
 
         /* Flow Diagrams (CSS Grid Based) */
         .flow-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: center; }
+
+        /* 4. LABS CAROUSEL */
+        .labs-carousel {
+            position: relative;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+        .labs-track {
+            display: flex;
+            transition: transform 0.3s ease;
+        }
+        .lab-slide {
+            min-width: 100%;
+            box-sizing: border-box;
+            padding: 20px;
+            overflow-y: auto;
+            max-height: 80vh;
+        }
+        .carousel-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.3);
+            border: none;
+            color: #fff;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 50%;
+            z-index: 10;
+        }
+        .arrow-left { left: 10px; }
+        .arrow-right { right: 10px; }
         .flow-step { 
             background: #ffffff; 
             border: 2px solid #0284c7; 
@@ -236,22 +268,34 @@
         <div style="margin-auto 0;">
             <div class="badge"><i class="fa-solid fa-graduation-cap"></i> UCC 122-1 Cloud Architecture</div>
             <h1>Digi Bank Platform Architecture</h1>
-            <p class="subtitle" style="font-size: 26px; color: #334155;">Modular Monoliths to Cloud-Native Microservices</p>
+            <p class="subtitle" style="font-size: 24px; color: #334155;">Modular Monoliths to Cloud-Native Microservices</p>
             
-            <div style="margin-top: 40px; padding-top: 30px; border-top: 2px solid #e2e8f0; display: flex; justify-content: space-between; align-items: flex-end;">
+            <div style="margin-top: 30px; padding: 15px 20px; background: #ffffff; border-radius: 10px; border: 1px solid #cbd5e1; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                <p style="font-size: 13px; font-weight: 700; color: #0284c7; margin: 0 0 8px 0; text-transform: uppercase; letter-spacing: 0.05em;">PROJECT TEAM MEMBERS:</p>
+                <div style="display: flex; gap: 20px; font-weight: 600; font-size: 15px; color: #0f172a; flex-wrap: wrap;">
+                    <span><i class="fa-solid fa-user" style="color:#0284c7;"></i> Tchikaya Ariel</span>
+                    <span><i class="fa-solid fa-user" style="color:#10b981;"></i> Ful Valentine</span>
+                    <span><i class="fa-solid fa-user" style="color:#f59e0b;"></i> Nancy Muneh</span>
+                    <span><i class="fa-solid fa-user" style="color:#8b5cf6;"></i> Nkwa Jude</span>
+                    <span><i class="fa-solid fa-user" style="color:#ec4899;"></i> Bryan Dino</span>
+                </div>
+            </div>
+
+            <div style="margin-top: 25px; padding-top: 20px; border-top: 2px solid #e2e8f0; display: flex; justify-content: space-between; align-items: flex-end;">
                 <div>
-                    <p style="font-size: 16px; margin: 0; color: #64748b;">PROGRAM</p>
-                    <p style="font-size: 18px; font-weight: 700; margin: 4px 0 0 0; color: #0f172a;">Professional Bachelor's Degree in Cloud Computing</p>
-                    <p style="font-size: 16px; margin: 2px 0 0 0; color: #475569;">University of the Mountains (UDM) | June 2026</p>
+                    <p style="font-size: 14px; margin: 0; color: #64748b;">PROGRAM</p>
+                    <p style="font-size: 17px; font-weight: 700; margin: 4px 0 0 0; color: #0f172a;">Professional Bachelor's Degree in Cloud Computing</p>
+                    <p style="font-size: 14px; margin: 2px 0 0 0; color: #475569;">University of the Mountains (UDM) | June 2026</p>
                 </div>
                 <div style="text-align: right;">
-                    <p style="font-size: 16px; margin: 0; color: #64748b;">SUPERVISOR</p>
-                    <p style="font-size: 18px; font-weight: 700; margin: 4px 0 0 0; color: #0284c7;">Eng. Willy Damtchou</p>
+                    <p style="font-size: 14px; margin: 0; color: #64748b;">SUPERVISOR</p>
+                    <p style="font-size: 17px; font-weight: 700; margin: 4px 0 0 0; color: #0284c7;">Eng. Willy Damtchou</p>
                 </div>
             </div>
         </div>
         <div class="slide-footer">
             <span>Digi Bank Engineering</span>
+            <span>Speaker: Nancy Muneh</span>
             <span>Slide 1 / 42</span>
         </div>
     </div>
@@ -266,44 +310,45 @@
                 <div class="card card-accent-blue">
                     <div class="icon"><i class="fa-solid fa-user-gear"></i></div>
                     <h3>Cloud Architecture</h3>
-                    <p><strong>[Member 1 Name]</strong></p>
-                    <p style="font-size: 14px; color: #64748b;">ID: [Student ID Placeholder]</p>
-                    <p style="font-size: 14px; margin-top: 10px;">Domain: System Blueprinting, Lab 1 Requirements & Microservices Sizing.</p>
+                    <p><strong>Nancy Muneh</strong></p>
+                    <p style="font-size: 13px; color: #0284c7; font-weight: 700; margin: 4px 0;">Presenter 1 (Slides 1–8)</p>
+                    <p style="font-size: 13px; margin-top: 6px;">Domain: System Blueprinting, Lab 1 Requirements & Scope Baseline.</p>
                 </div>
                 <div class="card card-accent-green">
                     <div class="icon"><i class="fa-solid fa-code"></i></div>
                     <h3>Jakarta EE & Java</h3>
-                    <p><strong>[Member 2 Name]</strong></p>
-                    <p style="font-size: 14px; color: #64748b;">ID: [Student ID Placeholder]</p>
-                    <p style="font-size: 14px; margin-top: 10px;">Domain: Lab 2 Enterprise Monolith, CDI, EJB, JPA & WildFly integration.</p>
+                    <p><strong>Ful Valentine</strong></p>
+                    <p style="font-size: 13px; color: #047857; font-weight: 700; margin: 4px 0;">Presenter 2 (Slides 9–14a)</p>
+                    <p style="font-size: 13px; margin-top: 6px;">Domain: Lab 2 Enterprise Monolith, CDI, EJB, JPA & WildFly integration.</p>
                 </div>
                 <div class="card card-accent-amber">
-                    <div class="icon"><i class="fa-solid fa-leaf"></i></div>
-                    <h3>Spring Ecosystem</h3>
-                    <p><strong>[Member 3 Name]</strong></p>
-                    <p style="font-size: 14px; color: #64748b;">ID: [Student ID Placeholder]</p>
-                    <p style="font-size: 14px; margin-top: 10px;">Domain: Lab 3 Spring Boot 3.5 Monolith & Framework Migration.</p>
+                    <div class="icon"><i class="fa-solid fa-gears"></i></div>
+                    <h3>DevOps & Infra</h3>
+                    <p><strong>Tchikaya Ariel</strong></p>
+                    <p style="font-size: 13px; color: #b45309; font-weight: 700; margin: 4px 0;">Presenter 3 (Slides 15a–20)</p>
+                    <p style="font-size: 13px; margin-top: 6px;">Domain: Docker Compose, setup.sh, Real-world Challenges & Lab 3 Intro.</p>
                 </div>
             </div>
             <div class="two-column" style="margin-top: 20px;">
                 <div class="card card-accent-purple">
-                    <div class="icon"><i class="fa-solid fa-network-wired"></i></div>
-                    <h3>Spring Cloud & DevOps</h3>
-                    <p><strong>[Member 4 Name]</strong></p>
-                    <p style="font-size: 14px; color: #64748b;">ID: [Student ID Placeholder]</p>
-                    <p style="font-size: 14px; margin-top: 10px;">Domain: Lab 4 API Gateway, Discovery, Config & Sagas.</p>
+                    <div class="icon"><i class="fa-solid fa-leaf"></i></div>
+                    <h3>Spring Ecosystem</h3>
+                    <p><strong>Nkwa Jude</strong></p>
+                    <p style="font-size: 13px; color: #6b21a8; font-weight: 700; margin: 4px 0;">Presenter 4 (Slides 21–29)</p>
+                    <p style="font-size: 13px; margin-top: 6px;">Domain: Spring Boot 3.5, OpenAPI, BDD Testing & Solved Challenges.</p>
                 </div>
                 <div class="card card-accent-blue">
-                    <div class="icon"><i class="fa-solid fa-vial-circle-check"></i></div>
-                    <h3>QA & Compliance</h3>
-                    <p><strong>[Member 5 Name]</strong></p>
-                    <p style="font-size: 14px; color: #64748b;">ID: [Student ID Placeholder]</p>
-                    <p style="font-size: 14px; margin-top: 10px;">Domain: BDD Testing, Cucumber, JUnit 5 & Docker Automation.</p>
+                    <div class="icon"><i class="fa-solid fa-network-wired"></i></div>
+                    <h3>Microservices & Sagas</h3>
+                    <p><strong>Bryan Dino</strong></p>
+                    <p style="font-size: 13px; color: #0369a1; font-weight: 700; margin: 4px 0;">Presenter 5 (Slides 30–42)</p>
+                    <p style="font-size: 13px; margin-top: 6px;">Domain: Eureka, API Gateway, Resilience4j, Sagas & Synthesis.</p>
                 </div>
             </div>
         </div>
         <div class="slide-footer">
             <span>Digi Bank Engineering</span>
+            <span>Speaker: Nancy Muneh</span>
             <span>Slide 2 / 42</span>
         </div>
     </div>
@@ -647,6 +692,119 @@ public class TransactionRest {<br>
         <div class="slide-footer">
             <span>Lab 2: Jakarta EE 10 Monolith</span>
             <span>Slide 12 / 42</span>
+        </div>
+    </div>
+</div>
+<!-- New Lab 2 Slides -->
+<div class="slide-container" id="slide13a">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-book"></i> Lab 2: Interactive API Documentation</h2>
+        <div class="content-area">
+            <p>Swagger UI is bundled with the Jakarta EE monolith and exposed at <code>/swagger-ui.html</code>. The OpenAPI spec is generated by <code>microprofile-openapi</code> annotations in the REST resources.</p>
+            <div class="code-box">
+                <code>
+@ApiResponse(responseCode = "200", description = "Account list")<br>
+@GET<br>
+@Path("/accounts")<br>
+public Response getAll() {<br>
+    // ...<br>
+}<br>
+                </code>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 2: Jakarta EE 10 Monolith</span>
+            <span>Slide 13 / 42</span>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide14a">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-vial"></i> Lab 2: Testing Strategy & BDD Automation</h2>
+        <div class="content-area">
+            <ul class="bullet-list">
+                <li>JUnit 5 for unit tests of EJBs and CDI beans.</li>
+                <li>Arquillian container tests against WildFly 33.</li>
+                <li>Cucumber BDD scenarios for end‑to‑end REST flows.</li>
+                <li>Integration tests using <code>jakarta.ws.rs.client.Client</code> against the deployed WAR.</li>
+            </ul>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 2: Jakarta EE 10 Monolith</span>
+            <span>Slide 14 / 42</span>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide15a">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-cubes"></i> Lab 2: Co‑existence Infrastructure (docker‑compose.yml)</h2>
+        <div class="content-area">
+            <p>Docker Compose brings together WildFly, PostgreSQL, and the monolith in a single network.</p>
+            <div class="code-box">
+                <code>
+version: "3.9"<br>
+services:<br>
+  wildfly:<br>
+    image: quay.io/wildfly/wildfly:33<br>
+    ports:<br>
+      - "8080:8080"<br>
+    volumes:<br>
+      - ./target/digibank.war:/opt/jboss/wildfly/standalone/deployments/digibank.war<br>
+  postgres:<br>
+    image: postgres:17<br>
+    environment:<br>
+      POSTGRES_DB: digibank<br>
+      POSTGRES_USER: digibank<br>
+      POSTGRES_PASSWORD: secret<br>
+    ports:<br>
+      - "5434:5432"<br>
+                </code>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 2: Jakarta EE 10 Monolith</span>
+            <span>Slide 15 / 42</span>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide16a">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-gear"></i> Lab 2: Automation & Orchestration Script (setup.sh)</h2>
+        <div class="content-area">
+            <p>The <code>setup.sh</code> script automates:</p>
+            <ul class="bullet-list">
+                <li>Building all Maven modules with <code>mvn clean install</code>.</li>
+                <li>Starting Docker Compose (<code>docker compose up -d</code>).</li>
+                <li>Waiting for WildFly to be ready and deploying the WAR.</li>
+                <li>Running smoke tests against the health endpoint.</li>
+            </ul>
+            <p>Located at <code>./setup.sh</code> in the repository root.</p>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 2: Jakarta EE 10 Monolith</span>
+            <span>Slide 16 / 42</span>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide17a">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-exclamation-triangle"></i> Lab 2: Real‑world Challenges & Solutions</h2>
+        <div class="content-area">
+            <ul class="bullet-list">
+                <li><strong>Class‑loader conflicts:</strong> WildFly modules required explicit <code>jboss.modules.system.pkgs</code> entries.</li>
+                <li><strong>Schema migrations:</strong> Flyway scripts had to be ordered to avoid data loss during module refactors.</li>
+                <li><strong>Transaction boundaries:</strong> EJB CMT vs. CDI @Transactional mis‑configurations caused lazy‑load errors.</li>
+                <li><strong>Networking:</strong> Docker bridge networking needed port mapping (5434) to avoid collision with host PostgreSQL.</li>
+                <li><strong>Swagger UI not loading:</strong> Required enabling <code>microprofile-openapi</code> feature in <code>standalone.conf</code>.</li>
+            </ul>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 2: Jakarta EE 10 Monolith</span>
+            <span>Slide 17 / 42</span>
         </div>
     </div>
 </div>
@@ -1583,6 +1741,8 @@ http://localhost:8080
             <p style="font-size: 22px; font-weight: 600; color: #0284c7;">Digi Bank Cloud Architecture Presentation</p>
             <p style="font-size: 16px; color: #64748b; margin-top: 10px;">UCC 122-1 Cloud Architecture | University of the Mountains (UDM)</p>
         </div>
+
+        
         <div class="slide-footer">
             <span>Digi Bank Engineering</span>
             <span>Slide 42 / 42</span>
@@ -1590,5 +1750,17 @@ http://localhost:8080
     </div>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  const track = document.querySelector('.labs-track');
+  const slides = Array.from(track.children);
+  let index = 0;
+  function update(){
+    track.style.transform = `translateX(-${index * 100}%)`;
+  }
+  document.querySelector('.arrow-left').addEventListener('click',()=>{ if(index>0){ index--; update(); } });
+  document.querySelector('.arrow-right').addEventListener('click',()=>{ if(index<slides.length-1){ index++; update(); } });
+});
+</script>
 </body>
 </html>
