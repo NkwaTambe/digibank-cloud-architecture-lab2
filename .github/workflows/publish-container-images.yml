@@ -38,14 +38,19 @@ jobs:
       - name: Set image namespace
         run: echo "IMAGE_NAMESPACE=ghcr.io/$(printf '%s' "$GITHUB_REPOSITORY_OWNER" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_ENV"
 
-      - name: Download PostgreSQL JDBC driver
-        run: curl --fail --location --output postgresql-42.7.5.jar https://jdbc.postgresql.org/download/postgresql-42.7.5.jar
+      - name: Download and verify PostgreSQL JDBC driver
+        run: |
+          set -euo pipefail
+          mvn --batch-mode --file digibank-parent/pom.xml dependency:copy \
+            -Dartifact=org.postgresql:postgresql:42.7.5 \
+            -DoutputDirectory=.
+          echo "69020b3bd20984543e817393f2e6c01a890ef2e37a77dd11d6d8508181d079ab  postgresql-42.7.5.jar" | sha256sum --check --status
 
       - name: Build Lab 2 Jakarta EE WAR
-        run: mvn --batch-mode --file digibank-parent/pom.xml package -DskipTests
+        run: mvn --batch-mode --file digibank-parent/pom.xml clean verify
 
       - name: Build Lab 3 Spring Boot WAR
-        run: mvn --batch-mode --file digibank-parent-spring/pom.xml package -DskipTests
+        run: mvn --batch-mode --file digibank-parent-spring/pom.xml clean verify
 
       - name: Publish Lab 2 image
         uses: docker/build-push-action@v6
@@ -69,7 +74,7 @@ jobs:
             ${{ env.IMAGE_NAMESPACE }}/digibank-lab3-spring:sha-${{ github.sha }}
 
       - name: Build Lab 4 microservices
-        run: mvn --batch-mode --file digibank-microservices/pom.xml package -DskipTests
+        run: mvn --batch-mode --file digibank-microservices/pom.xml clean verify
 
       - name: Publish Lab 4 microservice images
         env:
