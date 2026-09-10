@@ -805,25 +805,6 @@ services:<br>
     </div>
 </div>
 
-<div class="slide-container" id="slide17a">
-    <div class="content-wrapper">
-        <h2 class="slide-title"><i class="fa-solid fa-exclamation-triangle"></i> Lab 2: Real‑world Challenges & Solutions</h2>
-        <div class="content-area">
-            <ul class="bullet-list">
-                <li><strong>Class‑loader conflicts:</strong> WildFly modules required explicit <code>jboss.modules.system.pkgs</code> entries.</li>
-                <li><strong>Schema migrations:</strong> Flyway scripts had to be ordered to avoid data loss during module refactors.</li>
-                <li><strong>Transaction boundaries:</strong> EJB CMT vs. CDI @Transactional mis‑configurations caused lazy‑load errors.</li>
-                <li><strong>Networking:</strong> Docker bridge networking needed port mapping (5434) to avoid collision with host PostgreSQL.</li>
-                <li><strong>Swagger UI not loading:</strong> Required enabling <code>microprofile-openapi</code> feature in <code>standalone.conf</code>.</li>
-            </ul>
-        </div>
-        <div class="slide-footer">
-            <span>Lab 2: Jakarta EE 10 Monolith</span>
-            <span>Slide 17 / 42</span>
-        </div>
-    </div>
-</div>
-
 <!-- SLIDE 13: LAB 3 SECTION -->
 <div class="slide-container" id="slide13">
     <div class="content-wrapper">
@@ -1315,116 +1296,62 @@ mvn verify
     </div>
 </div>
 
-<!-- SLIDE 27: TECHNICAL CHALLENGE 3 -->
-<div class="slide-container" id="slide27">
-    <div class="content-wrapper">
-        <h2 class="slide-title"><i class="fa-solid fa-triangle-exclamation"></i> Challenge 3: Column Naming Strategy Mismatch</h2>
-        <div class="content-area">
-            <div class="card card-accent-amber">
-                <div style="display: flex; gap: 15px; align-items: flex-start;">
-                    <div style="background: #fef3c7; color: #b45309; padding: 10px 15px; border-radius: 8px; font-weight: 800;">ISSUE</div>
-                    <div>
-                        <p style="margin: 0; font-size: 16px;">Lab 2 `init.sql` created camelCase database columns (e.g., <code>firstName</code>) which clashed with Hibernate 6 default physical naming strategy that translates properties to <code>snake_case</code> (e.g., <code>first_name</code>).</p>
-                    </div>
-                </div>
-            </div>
-            <div class="card card-accent-green" style="margin-top: 20px;">
-                <div style="display: flex; gap: 15px; align-items: flex-start;">
-                    <div style="background: #d1fae5; color: #047857; padding: 10px 15px; border-radius: 8px; font-weight: 800;">SOLUTION</div>
-                    <div>
-                        <p style="margin: 0; font-size: 16px;">Created a dedicated <code>db/init-spring.sql</code> script for database/user creation only, allowing Hibernate's <code>spring.jpa.hibernate.ddl-auto=update</code> to generate matching physical tables automatically.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="slide-footer">
-            <span>Lab 3: Key Oral Challenges Solved</span>
-            <span>Slide 27 / 42</span>
-        </div>
-    </div>
-</div>
-
-<!-- SLIDE 28: TECHNICAL CHALLENGE 4 -->
-<div class="slide-container" id="slide28">
-    <div class="content-wrapper">
-        <h2 class="slide-title"><i class="fa-solid fa-triangle-exclamation"></i> Challenge 4: External WAR Deployment on WildFly</h2>
-        <div class="content-area">
-            <div class="card card-accent-amber">
-                <div style="display: flex; gap: 15px; align-items: flex-start;">
-                    <div style="background: #fef3c7; color: #b45309; padding: 10px 15px; border-radius: 8px; font-weight: 800;">ISSUE</div>
-                    <div>
-                        <p style="margin: 0; font-size: 16px;">Deployment conflicts on WildFly due to embedded Tomcat starter classes bundling servlet containers and logging jars inside the WAR package.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="card card-accent-green" style="margin-top: 20px;">
-                <div style="display: flex; gap: 15px; align-items: flex-start;">
-                    <div style="background: #d1fae5; color: #047857; padding: 10px 15px; border-radius: 8px; font-weight: 800;">SOLUTION</div>
-                    <div>
-                        <p style="margin: 0; font-size: 16px;">Marked embedded web container dependencies as <code>&lt;scope&gt;provided&lt;/scope&gt;</code> and extended <code>SpringBootServletInitializer</code> in the primary boot class.</p>
-                        <div class="code-box" style="margin-top: 10px;">
-&lt;dependency&gt;
-    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-    &lt;artifactId&gt;spring-boot-starter-tomcat&lt;/artifactId&gt;
-    &lt;scope&gt;provided&lt;/scope&gt;
-&lt;/dependency&gt;
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="slide-footer">
-            <span>Lab 3: Key Oral Challenges Solved</span>
-            <span>Slide 28 / 42</span>
-        </div>
-    </div>
-</div>
-
-<!-- SLIDE 29: TECHNICAL CHALLENGE 5 -->
-<div class="slide-container" id="slide29">
-    <div class="content-wrapper">
-        <h2 class="slide-title"><i class="fa-solid fa-triangle-exclamation"></i> Challenge 5: Idempotent REST Script Testing</h2>
-        <div class="content-area">
-            <div class="card card-accent-amber">
-                <div style="display: flex; gap: 15px; align-items: flex-start;">
-                    <div style="background: #fef3c7; color: #b45309; padding: 10px 15px; border-radius: 8px; font-weight: 800;">ISSUE</div>
-                    <div>
-                        <p style="margin: 0; font-size: 16px;">Automated execution of <code>setup-spring.sh</code> threw duplicate key SQL constraints on unique fields (email, account number) when re-run multiple times.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="card card-accent-green" style="margin-top: 20px;">
-                <div style="display: flex; gap: 15px; align-items: flex-start;">
-                    <div style="background: #d1fae5; color: #047857; padding: 10px 15px; border-radius: 8px; font-weight: 800;">SOLUTION</div>
-                    <div>
-                        <p style="margin: 0; font-size: 16px;">Updated script cURL payloads to append dynamic epoch timestamps and random suffixes to test entities, ensuring 100% idempotent test passes.</p>
-                        <div class="code-box" style="margin-top: 10px;">
-EMAIL="john.doe.$(date +%s)@digibank.com"
-ACC_NUM="ACC-$(date +%s)"
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="slide-footer">
-            <span>Lab 3: Key Oral Challenges Solved</span>
-            <span>Slide 29 / 42</span>
-        </div>
-    </div>
-</div>
-
 <!-- SLIDE 30: LAB 4 SECTION -->
 <div class="slide-container" id="slide30">
     <div class="content-wrapper">
-        <div class="section-title-layout">
-            <span class="tag tag-purple">PART FOUR</span>
-            <h2>LAB 4: MICROSERVICES ARCHITECTURE</h2>
-            <div class="section-divider" style="background: #8b5cf6;"></div>
-            <p>Decomposition, Service Discovery, Central Config, API Gateway & Distributed Saga Coordination</p>
+        <h2 class="slide-title"><i class="fa-solid fa-cloud"></i> Lab 4: Cloud-Native Microservices</h2>
+        <div class="content-area">
+            <div class="card card-accent-purple" style="max-width: 900px; margin: 0 auto;">
+                <h3 style="color: #7c3aed;">Lab Description</h3>
+                <p style="font-size: 15px;">Lab 4 evolves the Digi Bank platform from a modular monolith into a fully containerised <strong>Spring Cloud microservices ecosystem</strong>. Eight autonomous services — each with its own PostgreSQL schema — are registered dynamically via <strong>Netflix Eureka</strong>, exposed through a unified <strong>Spring Cloud Gateway</strong>, and coordinated across distributed transactions using the <strong>Saga orchestration pattern</strong>. Fault-tolerance is enforced per-service via <strong>Resilience4j</strong> (Circuit Breaker, Retry, Rate Limiter). The entire stack is managed by <strong>Docker Compose</strong> with custom startup scripts for automated deployment.</p>
+            </div>
         </div>
         <div class="slide-footer">
             <span>Lab 4: Cloud-Native Microservices</span>
             <span>Slide 30 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 30a: LAB 4 LEARNING OBJECTIVES & TOOLS -->
+<div class="slide-container" id="slide30a">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-bullseye"></i> Lab 4: Learning Objectives &amp; Environment</h2>
+        <div class="content-area">
+            <div class="two-column" style="gap: 30px;">
+                <div class="card card-accent-purple">
+                    <h3 style="color: #7c3aed;"><i class="fa-solid fa-bullseye" style="color:#8b5cf6; margin-right:8px;"></i>Learning Objectives</h3>
+                    <ul class="bullet-list" style="list-style:none; padding:0; margin:0;">
+                        <li style="position:relative; padding-left:28px; margin-bottom:8px; font-size:14px;"><span style="position:absolute;left:0;color:#8b5cf6;">✔</span><strong>Decompose</strong> a monolith into independently deployable microservices using domain-driven boundaries.</li>
+                        <li style="position:relative; padding-left:28px; margin-bottom:8px; font-size:14px;"><span style="position:absolute;left:0;color:#8b5cf6;">✔</span><strong>Implement service discovery</strong> with Netflix Eureka and load-balanced routing via Spring Cloud Gateway.</li>
+                        <li style="position:relative; padding-left:28px; margin-bottom:8px; font-size:14px;"><span style="position:absolute;left:0;color:#8b5cf6;">✔</span><strong>Apply the Saga pattern</strong> for distributed transactions with compensating rollback actions.</li>
+                        <li style="position:relative; padding-left:28px; margin-bottom:8px; font-size:14px;"><span style="position:absolute;left:0;color:#8b5cf6;">✔</span><strong>Enforce resilience</strong> using Resilience4j Circuit Breaker, Retry, and Rate Limiter per service.</li>
+                        <li style="position:relative; padding-left:28px; margin-bottom:8px; font-size:14px;"><span style="position:absolute;left:0;color:#8b5cf6;">✔</span><strong>Orchestrate containers</strong> with Docker Compose, health checks, and network aliases.</li>
+                    </ul>
+                </div>
+                <div class="card card-accent-purple">
+                    <h3 style="color: #7c3aed;"><i class="fa-solid fa-screwdriver-wrench" style="color:#8b5cf6; margin-right:8px;"></i>Required Tools &amp; Environments</h3>
+                    <table style="font-size:13px; margin-top:10px;">
+                        <thead><tr><th>Tool / Technology</th><th>Version / Role</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>JDK</strong></td><td>21 (LTS) — Spring Boot 3.5 baseline</td></tr>
+                            <tr><td><strong>Maven</strong></td><td>3.9+ — multi-module build & dependency management</td></tr>
+                            <tr><td><strong>Spring Boot</strong></td><td>3.5.x — microservice runtime per service</td></tr>
+                            <tr><td><strong>Spring Cloud</strong></td><td>2024.x — Eureka, Gateway, Config, OpenFeign</td></tr>
+                            <tr><td><strong>Resilience4j</strong></td><td>3.x — Circuit Breaker / Retry / Rate Limiter</td></tr>
+                            <tr><td><strong>Docker</strong></td><td>20.10+ — containerisation of each service</td></tr>
+                            <tr><td><strong>Docker Compose</strong></td><td>v2 — multi-container orchestration</td></tr>
+                            <tr><td><strong>PostgreSQL</strong></td><td>15 (per-service schema isolation)</td></tr>
+                            <tr><td><strong>Git + GitHub</strong></td><td>Source control & CI pipeline</td></tr>
+                            <tr><td><strong>IntelliJ IDEA / VS Code</strong></td><td>IDE with Spring & Docker plugins</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 4: Cloud-Native Microservices</span>
+            <span>Slide 30a / 42</span>
         </div>
     </div>
 </div>
@@ -1767,6 +1694,56 @@ http://localhost:8080
         <div class="slide-footer">
             <span>Summary</span>
             <span>Slide 41 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 41a: LIVE DEMO -->
+<div class="slide-container" id="slide41a">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-display"></i> Live Demo: Running the Digi Bank Platform</h2>
+        <div class="content-area">
+            <div class="two-column" style="gap: 30px;">
+                <div class="card card-accent-purple">
+                    <h3 style="color: #7c3aed;"><i class="fa-solid fa-server" style="color:#8b5cf6; margin-right:8px;"></i>Lab 2 — Jakarta EE Monolith</h3>
+                    <ul class="bullet-list" style="font-size: 14px; margin-top: 10px;">
+                        <li>Start: <code>./setup.sh</code> → option 1</li>
+                        <li>App UI: <code>http://localhost:9090/digibank-app/</code></li>
+                        <li>Swagger: <code>.../digibank-app/swagger.html</code></li>
+                        <li>Adminer DB: <code>http://localhost:8082</code></li>
+                    </ul>
+                </div>
+                <div class="card card-accent-amber">
+                    <h3 style="color: #b45309;"><i class="fa-solid fa-leaf" style="color:#f59e0b; margin-right:8px;"></i>Lab 3 — Spring Boot Monolith</h3>
+                    <ul class="bullet-list" style="font-size: 14px; margin-top: 10px;">
+                        <li>Start: <code>./setup-spring.sh</code> → option 1</li>
+                        <li>App UI: <code>http://localhost:9091/digibank-app/</code></li>
+                        <li>Swagger: <code>.../digibank-app/swagger-ui.html</code></li>
+                        <li>Adminer DB: <code>http://localhost:8083</code></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card card-accent-blue" style="margin-top: 20px;">
+                <h3 style="color: #0284c7;"><i class="fa-solid fa-cloud" style="color:#0ea5e9; margin-right:8px;"></i>Lab 4 — Spring Cloud Microservices</h3>
+                <div class="two-column" style="gap: 30px; margin-top: 10px;">
+                    <ul class="bullet-list" style="font-size: 14px;">
+                        <li>Start: <code>./setup-microservices.sh</code> → option 1</li>
+                        <li>Portal / Gateway: <code>http://localhost:8080</code></li>
+                        <li>Eureka: <code>http://localhost:8761</code></li>
+                        <li>Config Server: <code>http://localhost:8888</code></li>
+                    </ul>
+                    <ul class="bullet-list" style="font-size: 14px;">
+                        <li>Customer: <code>:8081</code> · Account: <code>:8082</code></li>
+                        <li>Transaction: <code>:8083</code> · Compliance: <code>:8084</code></li>
+                        <li>Notification: <code>:8085</code></li>
+                        <li><strong>Resilience demo:</strong> stop one service → others keep running</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Live Demo</span>
+            <span>Slide 41a / 42</span>
         </div>
     </div>
 </div>
