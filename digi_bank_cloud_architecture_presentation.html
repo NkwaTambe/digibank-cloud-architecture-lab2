@@ -1,0 +1,1766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digi Bank - Cloud Architecture Presentation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* 1. GLOBAL RESET & BASE STYLES */
+        * { box-sizing: border-box; }
+        body {
+            background-color: #0f172a;
+            display: grid;
+            gap: 40px;
+            grid-template-columns: 1fr;
+            margin: 0;
+            padding: 40px 0;
+            place-items: center;
+            font-family: 'Inter', sans-serif;
+            color: #1e293b;
+        }
+
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            background-color: #ffffff; /* Clean White Corporate Theme */
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            padding: 50px 60px;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* Modern Subtle Accent Top Bar */
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #0284c7 0%, #10b981 50%, #f59e0b 100%);
+            z-index: 10;
+        }
+
+        /* Slide Footer Line & Number */
+        .slide-footer {
+            position: absolute;
+            bottom: 25px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+            font-size: 13px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .slide-container > .content-wrapper { 
+            position: relative; 
+            z-index: 2; 
+            height: 100%; 
+            display: flex; 
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* 2. TYPOGRAPHY */
+        h1, h2, h3, h4 { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; color: #0f172a; }
+        h1 { font-size: 60px; font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; }
+        h2.slide-title { 
+            font-size: 34px; 
+            font-weight: 700; 
+            margin-bottom: 25px; 
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #0f172a;
+            letter-spacing: -0.01em;
+        }
+        h2.slide-title i { color: #0284c7; }
+        h3 { font-size: 22px; font-weight: 700; color: #0369a1; margin-bottom: 12px; }
+        p, li { font-size: 18px; line-height: 1.6; color: #334155; }
+        .subtitle { font-size: 20px; color: #64748b; font-weight: 500; margin-top: 8px; }
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .tag-blue { background-color: #e0f2fe; color: #0369a1; }
+        .tag-green { background-color: #d1fae5; color: #047857; }
+        .tag-amber { background-color: #fef3c7; color: #b45309; }
+
+        /* 3. LAYOUT COMPONENTS */
+        .content-area { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; width: 100%; }
+        
+        .two-column { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; width: 100%; }
+        .three-column { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; align-items: start; width: 100%; }
+        
+        /* Cards & Tiles */
+        .card { 
+            background: #f8fafc; 
+            padding: 24px; 
+            border-radius: 12px; 
+            border: 1px solid #e2e8f0; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transition: all 0.2s ease;
+        }
+        .card-accent-blue { border-top: 4px solid #0284c7; }
+        .card-accent-green { border-top: 4px solid #10b981; }
+        .card-accent-amber { border-top: 4px solid #f59e0b; }
+        .card-accent-purple { border-top: 4px solid #8b5cf6; }
+
+        .card .icon { font-size: 28px; color: #0284c7; margin-bottom: 14px; }
+
+        /* Tables */
+        table { width: 100%; border-collapse: separate; border-spacing: 0; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0; font-size: 16px; }
+        th { background: #f1f5f9; color: #0f172a; text-align: left; padding: 14px 18px; font-weight: 700; border-bottom: 2px solid #cbd5e1; }
+        td { padding: 12px 18px; border-bottom: 1px solid #e2e8f0; color: #334155; background: #ffffff; }
+        tr:last-child td { border-bottom: none; }
+        tr:nth-child(even) td { background: #f8fafc; }
+
+        /* Bullet Lists */
+        .bullet-list ul { list-style: none; padding: 0; margin: 0; }
+        .bullet-list li { position: relative; padding-left: 32px; margin-bottom: 12px; font-size: 17px; }
+        .bullet-list li::before { 
+            content: '\f00c'; 
+            font-family: 'Font Awesome 6 Free'; 
+            font-weight: 900; 
+            position: absolute; 
+            left: 0; 
+            top: 2px;
+            color: #10b981; 
+            font-size: 15px; 
+        }
+
+        /* Code Snippet Box */
+        .code-box {
+            background-color: #0f172a;
+            color: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            overflow-x: auto;
+            border-left: 4px solid #0284c7;
+        }
+
+        /* Section Title Style */
+        .section-title-layout { 
+            text-align: center; 
+            justify-content: center; 
+            align-items: center;
+            height: 100%; 
+            display: flex;
+            flex-direction: column;
+        }
+        .section-title-layout h2 { font-size: 56px; color: #0f172a; margin-top: 15px; margin-bottom: 15px; font-weight: 800; }
+        .section-title-layout p { font-size: 22px; color: #475569; max-width: 800px; }
+        .section-divider { width: 120px; height: 5px; background: #0284c7; border: none; margin: 25px auto; border-radius: 3px; }
+
+        /* Title Slide Custom */
+        .title-slide { 
+            background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .title-slide h1 { color: #0f172a; font-size: 62px; }
+        .title-slide .badge { 
+            background: #e0f2fe; 
+            color: #0369a1; 
+            padding: 8px 16px; 
+            border-radius: 30px; 
+            font-weight: 700; 
+            font-size: 14px; 
+            width: fit-content;
+            margin-bottom: 20px;
+        }
+
+        /* Flow Diagrams (CSS Grid Based) */
+        .flow-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: center; }
+
+        /* 4. LABS CAROUSEL */
+        .labs-carousel {
+            position: relative;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+        .labs-track {
+            display: flex;
+            transition: transform 0.3s ease;
+        }
+        .lab-slide {
+            min-width: 100%;
+            box-sizing: border-box;
+            padding: 20px;
+            overflow-y: auto;
+            max-height: 80vh;
+        }
+        .carousel-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.3);
+            border: none;
+            color: #fff;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 50%;
+            z-index: 10;
+        }
+        .arrow-left { left: 10px; }
+        .arrow-right { right: 10px; }
+        .flow-step { 
+            background: #ffffff; 
+            border: 2px solid #0284c7; 
+            border-radius: 10px; 
+            padding: 18px; 
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+        .flow-arrow { text-align: center; font-size: 24px; color: #0284c7; }
+
+        /* Metric Box */
+        .metric-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03);
+        }
+        .metric-value { font-size: 48px; font-weight: 800; color: #0284c7; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .metric-label { font-size: 15px; font-weight: 600; color: #64748b; text-transform: uppercase; margin-top: 5px; }
+
+        .highlight-text { color: #0284c7; font-weight: 700; }
+        .alert-box {
+            background-color: #fef2f2;
+            border-left: 4px solid #ef4444;
+            padding: 14px 18px;
+            border-radius: 6px;
+            color: #991b1b;
+            font-size: 15px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- SLIDE 1: TITLE -->
+<div class="slide-container title-slide" id="slide1">
+    <div class="content-wrapper">
+        <div style="margin-auto 0;">
+            <div class="badge"><i class="fa-solid fa-graduation-cap"></i> UCC 122-1 Cloud Architecture</div>
+            <h1>Digi Bank Platform Architecture</h1>
+            <p class="subtitle" style="font-size: 24px; color: #334155;">Modular Monoliths to Cloud-Native Microservices</p>
+            
+            <div style="margin-top: 30px; padding: 15px 20px; background: #ffffff; border-radius: 10px; border: 1px solid #cbd5e1; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                <p style="font-size: 13px; font-weight: 700; color: #0284c7; margin: 0 0 8px 0; text-transform: uppercase; letter-spacing: 0.05em;">PROJECT TEAM MEMBERS:</p>
+                <div style="display: flex; gap: 20px; font-weight: 600; font-size: 15px; color: #0f172a; flex-wrap: wrap;">
+                    <span><i class="fa-solid fa-user" style="color:#0284c7;"></i> Tchikaya Ariel</span>
+                    <span><i class="fa-solid fa-user" style="color:#10b981;"></i> Ful Valentine</span>
+                    <span><i class="fa-solid fa-user" style="color:#f59e0b;"></i> Nancy Muneh</span>
+                    <span><i class="fa-solid fa-user" style="color:#8b5cf6;"></i> Nkwa Jude</span>
+                    <span><i class="fa-solid fa-user" style="color:#ec4899;"></i> Bryan Dino</span>
+                </div>
+            </div>
+
+            <div style="margin-top: 25px; padding-top: 20px; border-top: 2px solid #e2e8f0; display: flex; justify-content: space-between; align-items: flex-end;">
+                <div>
+                    <p style="font-size: 14px; margin: 0; color: #64748b;">PROGRAM</p>
+                    <p style="font-size: 17px; font-weight: 700; margin: 4px 0 0 0; color: #0f172a;">Professional Bachelor's Degree in Cloud Computing</p>
+                    <p style="font-size: 14px; margin: 2px 0 0 0; color: #475569;">University of the Mountains (UDM) | June 2026</p>
+                </div>
+                <div style="text-align: right;">
+                    <p style="font-size: 14px; margin: 0; color: #64748b;">SUPERVISOR</p>
+                    <p style="font-size: 17px; font-weight: 700; margin: 4px 0 0 0; color: #0284c7;">Eng. Willy Damtchou</p>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Digi Bank Engineering</span>
+            <span>Speaker: Nancy Muneh</span>
+            <span>Slide 1 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 2: TEAM MEMBERS -->
+<div class="slide-container" id="slide2">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-users"></i> Project Engineering Team</h2>
+        <div class="content-area">
+            <div class="three-column">
+                <div class="card card-accent-blue">
+                    <div class="icon"><i class="fa-solid fa-user-gear"></i></div>
+                    <h3>Cloud Architecture</h3>
+                    <p><strong>Nancy Muneh</strong></p>
+                    <p style="font-size: 13px; color: #0284c7; font-weight: 700; margin: 4px 0;">Presenter 1 (Slides 1–8)</p>
+                    <p style="font-size: 13px; margin-top: 6px;">Domain: System Blueprinting, Lab 1 Requirements & Scope Baseline.</p>
+                </div>
+                <div class="card card-accent-green">
+                    <div class="icon"><i class="fa-solid fa-code"></i></div>
+                    <h3>Jakarta EE & Java</h3>
+                    <p><strong>Ful Valentine</strong></p>
+                    <p style="font-size: 13px; color: #047857; font-weight: 700; margin: 4px 0;">Presenter 2 (Slides 9–14a)</p>
+                    <p style="font-size: 13px; margin-top: 6px;">Domain: Lab 2 Enterprise Monolith, CDI, EJB, JPA & WildFly integration.</p>
+                </div>
+                <div class="card card-accent-amber">
+                    <div class="icon"><i class="fa-solid fa-gears"></i></div>
+                    <h3>DevOps & Infra</h3>
+                    <p><strong>Tchikaya Ariel</strong></p>
+                    <p style="font-size: 13px; color: #b45309; font-weight: 700; margin: 4px 0;">Presenter 3 (Slides 15a–20)</p>
+                    <p style="font-size: 13px; margin-top: 6px;">Domain: Docker Compose, setup.sh, Real-world Challenges & Lab 3 Intro.</p>
+                </div>
+            </div>
+            <div class="two-column" style="margin-top: 20px;">
+                <div class="card card-accent-purple">
+                    <div class="icon"><i class="fa-solid fa-leaf"></i></div>
+                    <h3>Spring Ecosystem</h3>
+                    <p><strong>Nkwa Jude</strong></p>
+                    <p style="font-size: 13px; color: #6b21a8; font-weight: 700; margin: 4px 0;">Presenter 4 (Slides 21–29)</p>
+                    <p style="font-size: 13px; margin-top: 6px;">Domain: Spring Boot 3.5, OpenAPI, BDD Testing & Solved Challenges.</p>
+                </div>
+                <div class="card card-accent-blue">
+                    <div class="icon"><i class="fa-solid fa-network-wired"></i></div>
+                    <h3>Microservices & Sagas</h3>
+                    <p><strong>Bryan Dino</strong></p>
+                    <p style="font-size: 13px; color: #0369a1; font-weight: 700; margin: 4px 0;">Presenter 5 (Slides 30–42)</p>
+                    <p style="font-size: 13px; margin-top: 6px;">Domain: Eureka, API Gateway, Resilience4j, Sagas & Synthesis.</p>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Digi Bank Engineering</span>
+            <span>Speaker: Nancy Muneh</span>
+            <span>Slide 2 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 3: EXECUTIVE SUMMARY & ROADMAP -->
+<div class="slide-container" id="slide3">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-route"></i> Architectural Progression Roadmap</h2>
+        <div class="content-area">
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+                <div class="card" style="display: flex; align-items: center; gap: 20px; background: #f0f9ff; border-color: #0284c7;">
+                    <div style="background: #0284c7; color: white; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 20px;">1</div>
+                    <div>
+                        <h4 style="font-size: 18px; color: #0369a1;">LAB 1: System Blueprint & Business Requirements</h4>
+                        <p style="font-size: 15px; margin: 2px 0 0 0;">Functional scope, stakeholder matrix, NFR constraints, and Modular Monolith target design.</p>
+                    </div>
+                </div>
+                <div class="card" style="display: flex; align-items: center; gap: 20px; background: #f0fdf4; border-color: #10b981;">
+                    <div style="background: #10b981; color: white; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 20px;">2</div>
+                    <div>
+                        <h4 style="font-size: 18px; color: #047857;">LAB 2: Jakarta EE 10 Enterprise Monolith</h4>
+                        <p style="font-size: 15px; margin: 2px 0 0 0;">7-module Maven reactor, CDI/EJB/JPA, WildFly deployment, and PostgreSQL containerization.</p>
+                    </div>
+                </div>
+                <div class="card" style="display: flex; align-items: center; gap: 20px; background: #fffbeb; border-color: #f59e0b;">
+                    <div style="background: #f59e0b; color: white; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 20px;">3</div>
+                    <div>
+                        <h4 style="font-size: 18px; color: #b45309;">LAB 3: Spring Boot Modular Monolith Migration (Deep Dive)</h4>
+                        <p style="font-size: 15px; margin: 2px 0 0 0;">Rebuilding with Spring Boot 3.5, Spring Data JPA, Thymeleaf, OpenAPI, and solve 5 key challenges.</p>
+                    </div>
+                </div>
+                <div class="card" style="display: flex; align-items: center; gap: 20px; background: #faf5ff; border-color: #8b5cf6;">
+                    <div style="background: #8b5cf6; color: white; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 20px;">4</div>
+                    <div>
+                        <h4 style="font-size: 18px; color: #6b21a8;">LAB 4: Cloud-Native Microservices Ecosystem</h4>
+                        <p style="font-size: 15px; margin: 2px 0 0 0;">Service decomposition, Eureka Discovery, API Gateway, Saga Pattern, CQRS & Docker Orchestration.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Digi Bank Engineering</span>
+            <span>Slide 3 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 4: LAB 1 SECTION -->
+<div class="slide-container" id="slide4">
+    <div class="content-wrapper">
+        <div class="section-title-layout">
+            <span class="tag tag-blue">PART ONE</span>
+            <h2>LAB 1: ARCHITECTURE FOUNDATION</h2>
+            <div class="section-divider"></div>
+            <p>Domain Analysis, Stakeholders, Business Functions & Initial System Blueprint</p>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 1: Requirements & Architecture</span>
+            <span>Slide 4 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 5: LAB 1 OBJECTIVES -->
+<div class="slide-container" id="slide5">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-bullseye"></i> Lab 1: Objectives & Scope</h2>
+        <div class="content-area">
+            <div class="two-column">
+                <div class="card card-accent-blue">
+                    <h3>Primary Goals</h3>
+                    <div class="bullet-list">
+                        <ul>
+                            <li>Define core banking domain boundaries and business entities.</li>
+                            <li>Establish stakeholder needs matrix and operational constraints.</li>
+                            <li>Map functional requirements to architectural modules.</li>
+                            <li>Design initial Modular Monolith baseline diagram.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card card-accent-green">
+                    <h3>Key Deliverables</h3>
+                    <div class="bullet-list">
+                        <ul>
+                            <li>Comprehensive System Architecture Document (SAD).</li>
+                            <li>Functional vs Non-Functional Requirements breakdown.</li>
+                            <li>Logical Data Model and entity relation baseline.</li>
+                            <li>Technology selection matrix for Lab 2 implementation.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 1: Requirements & Architecture</span>
+            <span>Slide 5 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 6: STAKEHOLDER MATRIX -->
+<div class="slide-container" id="slide6">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-users-rectangle"></i> Stakeholders & Domain Analysis</h2>
+        <div class="content-area">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Stakeholder Role</th>
+                        <th>Primary Interest / Need</th>
+                        <th>Architectural Impact</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Bank Customer</strong></td>
+                        <td>Account management, instant transfers, 24/7 availability</td>
+                        <td>Requires responsive REST APIs, fast SLAs, low latency</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Compliance Officer</strong></td>
+                        <td>Transaction auditing, anti-money laundering, transaction caps</td>
+                        <td>Mandates strict audit trail logging & compliance validation (&le; $10k)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>System Administrator</strong></td>
+                        <td>Centralized deployment, health monitoring, database backup</td>
+                        <td>Drives containerization, JNDI external configs, and log management</td>
+                    </tr>
+                    <tr>
+                        <td><strong>DevOps / Developers</strong></td>
+                        <td>Code modularity, fast builds, automated testing pipelines</td>
+                        <td>Requires multi-module Maven structure & clear separation of concerns</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 1: Requirements & Architecture</span>
+            <span>Slide 6 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 7: BUSINESS FUNCTIONS & CONSTRAINTS -->
+<div class="slide-container" id="slide7">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-list-check"></i> System Functions & Constraints</h2>
+        <div class="content-area">
+            <div class="three-column">
+                <div class="card card-accent-blue">
+                    <h3>Core Functions</h3>
+                    <ul style="padding-left: 20px; font-size: 15px;">
+                        <li>Customer Registration & Profile</li>
+                        <li>Bank Account Creation</li>
+                        <li>Deposits, Withdrawals, Transfers</li>
+                        <li>Compliance Verification</li>
+                    </ul>
+                </div>
+                <div class="card card-accent-green">
+                    <h3>Functional Constraints</h3>
+                    <ul style="padding-left: 20px; font-size: 15px;">
+                        <li>Unique customer email enforcement</li>
+                        <li>Unique account number generation</li>
+                        <li>Strict compliance cap (&le; $10,000)</li>
+                        <li>Atomic transaction processing</li>
+                    </ul>
+                </div>
+                <div class="card card-accent-amber">
+                    <h3>Non-Functional Constraints</h3>
+                    <ul style="padding-left: 20px; font-size: 15px;">
+                        <li><strong>Availability:</strong> 99.9% uptime target</li>
+                        <li><strong>Data Integrity:</strong> Relational ACID guarantees</li>
+                        <li><strong>Security:</strong> Isolated DS & parameters</li>
+                        <li><strong>Portability:</strong> Standardized WAR packaging</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 1: Requirements & Architecture</span>
+            <span>Slide 7 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 8: LAB 1 ARCHITECTURE BLUEPRINT -->
+<div class="slide-container" id="slide8">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-sitemap"></i> Target Modular Monolith Architecture</h2>
+        <div class="content-area">
+            <div style="background: #f8fafc; border: 2px dashed #0284c7; border-radius: 12px; padding: 25px; text-align: center;">
+                <h3 style="margin-bottom: 20px;">Single Application EAR/WAR Package</h3>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 25px;">
+                    <div style="background: #e0f2fe; padding: 15px; border-radius: 8px; font-weight: 700; color: #0369a1;">Customer Module</div>
+                    <div style="background: #e0f2fe; padding: 15px; border-radius: 8px; font-weight: 700; color: #0369a1;">Account Module</div>
+                    <div style="background: #e0f2fe; padding: 15px; border-radius: 8px; font-weight: 700; color: #0369a1;">Transaction Module</div>
+                    <div style="background: #fef3c7; padding: 15px; border-radius: 8px; font-weight: 700; color: #b45309;">Compliance Module</div>
+                </div>
+                <div style="background: #f1f5f9; padding: 12px; border-radius: 8px; font-weight: 600; color: #475569; margin-bottom: 20px;">
+                    Shared Domain & Base Audit Models (digibank-shared)
+                </div>
+                <div style="display: inline-block; background: #0f172a; color: white; padding: 10px 25px; border-radius: 6px; font-weight: 600;">
+                    <i class="fa-solid fa-database" style="color: #10b981; margin-right: 8px;"></i> PostgreSQL Database (Relational Data Store)
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 1: Requirements & Architecture</span>
+            <span>Slide 8 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 9: LAB 2 SECTION -->
+<div class="slide-container" id="slide9">
+    <div class="content-wrapper">
+        <div class="section-title-layout">
+            <span class="tag tag-green">PART TWO</span>
+            <h2>LAB 2: JAKARTA EE 10 IMPLEMENTATION</h2>
+            <div class="section-divider" style="background: #10b981;"></div>
+            <p>Enterprise Java Standards, Application Server Deployment & CDI/EJB Integration</p>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 2: Jakarta EE 10 Monolith</span>
+            <span>Slide 9 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 10: LAB 2 STACK & TOOLS -->
+<div class="slide-container" id="slide10">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-cubes"></i> Lab 2: Enterprise Tech Stack</h2>
+        <div class="content-area">
+            <div class="three-column">
+                <div class="card card-accent-green">
+                    <h3>Core Platform</h3>
+                    <div class="bullet-list">
+                        <ul>
+                            <li><strong>Java 17 (LTS)</strong></li>
+                            <li><strong>Jakarta EE 10</strong> specifications</li>
+                            <li><strong>WildFly 33</strong> application server</li>
+                            <li><strong>Maven 3.8+</strong> multi-module reactor</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card card-accent-blue">
+                    <h3>Enterprise Components</h3>
+                    <div class="bullet-list">
+                        <ul>
+                            <li><strong>CDI 4.0:</strong> Bean injection</li>
+                            <li><strong>EJB 4.0:</strong> Stateless session beans</li>
+                            <li><strong>JPA 3.1 / Hibernate:</strong> ORM</li>
+                            <li><strong>JAX-RS:</strong> RESTful endpoints</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card card-accent-amber">
+                    <h3>Database & Infra</h3>
+                    <div class="bullet-list">
+                        <ul>
+                            <li><strong>PostgreSQL 17:</strong> Relational store</li>
+                            <li><strong>Port 5434:</strong> Isolated host mapping</li>
+                            <li><strong>JNDI:</strong> `java:/jdbc/DigiBankDS`</li>
+                            <li><strong>Docker Compose:</strong> Automated setup</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 2: Jakarta EE 10 Monolith</span>
+            <span>Slide 10 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 11: LAB 2 ARCHITECTURE & MODULES -->
+<div class="slide-container" id="slide11">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-layer-group"></i> Lab 2: 7 Maven Reactor Modules</h2>
+        <div class="content-area">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Module Name</th>
+                        <th>Primary Responsibility</th>
+                        <th>Key Technologies / Classes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>digibank-shared</code></td><td>Common BaseEntity audit & DTOs</td><td>@MappedSuperclass BaseEntity, ApiResponse&lt;T&gt;</td></tr>
+                    <tr><td><code>digibank-customer</code></td><td>Customer persistence & logic</td><td>Customer entity, CustomerService EJB, REST endpoint</td></tr>
+                    <tr><td><code>digibank-account</code></td><td>Account management & balance</td><td>Account entity, AccountService, AccountRest</td></tr>
+                    <tr><td><code>digibank-transaction</code></td><td>Debit, credit & transfer logic</td><td>Transaction entity, TransactionService EJB</td></tr>
+                    <tr><td><code>digibank-compliance</code></td><td>Business rule validation (&le;$10,000)</td><td>ComplianceService Stateless EJB, ComplianceRest</td></tr>
+                    <tr><td><code>digibank-index</code></td><td>Landing JSP and servlet router</td><td>index.jsp, PortalServlet</td></tr>
+                    <tr><td><code>digibank-app</code></td><td>Packaging WAR & persistence context</td><td>persistence.xml, beans.xml, RestApplication</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 2: Jakarta EE 10 Monolith</span>
+            <span>Slide 11 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 12: LAB 2 ENTERPRISE PATTERNS -->
+<div class="slide-container" id="slide12">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-diagram-project"></i> Lab 2: Enterprise Design Patterns</h2>
+        <div class="content-area">
+            <div class="two-column">
+                <div class="card card-accent-green">
+                    <h3>Stateless Session Beans (@Stateless)</h3>
+                    <p style="font-size: 15px;">Encapsulates business operations with automatic container-managed transactions (CMT). Ensures thread safety and transaction rollback on exception.</p>
+                    <div class="code-box" style="margin-top: 10px;">
+@Stateless<br>
+public class TransactionService {<br>
+&nbsp;&nbsp;@PersistenceContext<br>
+&nbsp;&nbsp;private EntityManager em;<br>
+}
+                    </div>
+                </div>
+                <div class="card card-accent-blue">
+                    <h3>Contexts & Dependency Injection (@Inject)</h3>
+                    <p style="font-size: 15px;">CDI manages lifecycle and dependency injection across REST resources and EJBs cleanly without manual factory boilerplate.</p>
+                    <div class="code-box" style="margin-top: 10px;">
+@Path("/transactions")<br>
+public class TransactionRest {<br>
+&nbsp;&nbsp;@Inject<br>
+&nbsp;&nbsp;private TransactionService service;<br>
+}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 2: Jakarta EE 10 Monolith</span>
+            <span>Slide 12 / 42</span>
+        </div>
+    </div>
+</div>
+<!-- New Lab 2 Slides -->
+<div class="slide-container" id="slide13a">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-book"></i> Lab 2: Interactive API Documentation</h2>
+        <div class="content-area">
+            <p>Swagger UI is bundled with the Jakarta EE monolith and exposed at <code>/swagger-ui.html</code>. The OpenAPI spec is generated by <code>microprofile-openapi</code> annotations in the REST resources.</p>
+            <div class="code-box">
+                <code>
+@ApiResponse(responseCode = "200", description = "Account list")<br>
+@GET<br>
+@Path("/accounts")<br>
+public Response getAll() {<br>
+    // ...<br>
+}<br>
+                </code>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 2: Jakarta EE 10 Monolith</span>
+            <span>Slide 13 / 42</span>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide14a">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-vial"></i> Lab 2: Testing Strategy & BDD Automation</h2>
+        <div class="content-area">
+            <ul class="bullet-list">
+                <li>JUnit 5 for unit tests of EJBs and CDI beans.</li>
+                <li>Arquillian container tests against WildFly 33.</li>
+                <li>Cucumber BDD scenarios for end‑to‑end REST flows.</li>
+                <li>Integration tests using <code>jakarta.ws.rs.client.Client</code> against the deployed WAR.</li>
+            </ul>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 2: Jakarta EE 10 Monolith</span>
+            <span>Slide 14 / 42</span>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide15a">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-cubes"></i> Lab 2: Co‑existence Infrastructure (docker‑compose.yml)</h2>
+        <div class="content-area">
+            <p>Docker Compose brings together WildFly, PostgreSQL, and the monolith in a single network.</p>
+            <div class="code-box">
+                <code>
+version: "3.9"<br>
+services:<br>
+  wildfly:<br>
+    image: quay.io/wildfly/wildfly:33<br>
+    ports:<br>
+      - "8080:8080"<br>
+    volumes:<br>
+      - ./target/digibank.war:/opt/jboss/wildfly/standalone/deployments/digibank.war<br>
+  postgres:<br>
+    image: postgres:17<br>
+    environment:<br>
+      POSTGRES_DB: digibank<br>
+      POSTGRES_USER: digibank<br>
+      POSTGRES_PASSWORD: secret<br>
+    ports:<br>
+      - "5434:5432"<br>
+                </code>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 2: Jakarta EE 10 Monolith</span>
+            <span>Slide 15 / 42</span>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide16a">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-gear"></i> Lab 2: Automation & Orchestration Script (setup.sh)</h2>
+        <div class="content-area">
+            <p>The <code>setup.sh</code> script automates:</p>
+            <ul class="bullet-list">
+                <li>Building all Maven modules with <code>mvn clean install</code>.</li>
+                <li>Starting Docker Compose (<code>docker compose up -d</code>).</li>
+                <li>Waiting for WildFly to be ready and deploying the WAR.</li>
+                <li>Running smoke tests against the health endpoint.</li>
+            </ul>
+            <p>Located at <code>./setup.sh</code> in the repository root.</p>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 2: Jakarta EE 10 Monolith</span>
+            <span>Slide 16 / 42</span>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide17a">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-exclamation-triangle"></i> Lab 2: Real‑world Challenges & Solutions</h2>
+        <div class="content-area">
+            <ul class="bullet-list">
+                <li><strong>Class‑loader conflicts:</strong> WildFly modules required explicit <code>jboss.modules.system.pkgs</code> entries.</li>
+                <li><strong>Schema migrations:</strong> Flyway scripts had to be ordered to avoid data loss during module refactors.</li>
+                <li><strong>Transaction boundaries:</strong> EJB CMT vs. CDI @Transactional mis‑configurations caused lazy‑load errors.</li>
+                <li><strong>Networking:</strong> Docker bridge networking needed port mapping (5434) to avoid collision with host PostgreSQL.</li>
+                <li><strong>Swagger UI not loading:</strong> Required enabling <code>microprofile-openapi</code> feature in <code>standalone.conf</code>.</li>
+            </ul>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 2: Jakarta EE 10 Monolith</span>
+            <span>Slide 17 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 13: LAB 3 SECTION -->
+<div class="slide-container" id="slide13">
+    <div class="content-wrapper">
+        <div class="section-title-layout">
+            <span class="tag tag-amber">PART THREE (DEEP DIVE)</span>
+            <h2>LAB 3: SPRING BOOT MODULAR MONOLITH</h2>
+            <div class="section-divider" style="background: #f59e0b;"></div>
+            <p>Framework Portability, Spring Ecosystem Modernization, OpenAPI & WildFly WAR Deployment</p>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 3: Spring Boot Monolith</span>
+            <span>Slide 13 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 14: LAB 3 GOAL & HIGHLIGHTS -->
+<div class="slide-container" id="slide14">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-flag"></i> Lab 3: Goal & Architectural Purpose</h2>
+        <div class="content-area">
+            <div class="two-column">
+                <div class="card card-accent-amber">
+                    <h3>Core Migration Goal</h3>
+                    <p>Rebuild the <strong>exact same</strong> Digi Bank modular monolith as Lab 2 using the <strong>Spring ecosystem</strong> (Spring Boot 3.5.15).</p>
+                    <div class="bullet-list" style="margin-top: 15px;">
+                        <ul>
+                            <li>Retain identical business scope and domain logic.</li>
+                            <li>Maintain identical 7-module Maven reactor structure.</li>
+                            <li>Demonstrate enterprise framework portability.</li>
+                            <li>Package as WAR deployed on external <strong>WildFly 33</strong>.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card card-accent-blue">
+                    <h3>Key Value Delivered</h3>
+                    <p>Proves that clean architectural boundaries allow seamless framework migration without altering core domain entities or business rules.</p>
+                    <div class="metric-card" style="margin-top: 15px;">
+                        <div class="metric-value" style="color: #f59e0b;">100%</div>
+                        <div class="metric-label">Functional Equivalence to Lab 2</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 3: Spring Boot Monolith</span>
+            <span>Slide 14 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 15: LAB 3 COMPLETE TECH STACK -->
+<div class="slide-container" id="slide15">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-microchip"></i> Lab 3: Complete Technology Stack</h2>
+        <div class="content-area">
+            <div class="three-column">
+                <div class="card card-accent-amber">
+                    <h3>Framework & Core</h3>
+                    <div class="bullet-list">
+                        <ul>
+                            <li><strong>Java 17 (LTS)</strong> & Maven 3.8+</li>
+                            <li><strong>Spring Boot 3.5.15</strong></li>
+                            <li><code>spring-boot-dependencies</code> BOM</li>
+                            <li>Spring Web (`starter-web`)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card card-accent-green">
+                    <h3>Persistence & Views</h3>
+                    <div class="bullet-list">
+                        <ul>
+                            <li><strong>Spring Data JPA</strong></li>
+                            <li><strong>Hibernate ORM</strong> (`ddl-auto=update`)</li>
+                            <li><strong>Thymeleaf Engine</strong> (`starter-thymeleaf`)</li>
+                            <li><strong>Springdoc OpenAPI 2.8.17</strong></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card card-accent-blue">
+                    <h3>Runtime & Infra</h3>
+                    <div class="bullet-list">
+                        <ul>
+                            <li><strong>WildFly 33</strong> Application Server</li>
+                            <li><strong>JNDI Datasource:</strong> `DigiBankDS`</li>
+                            <li><strong>PostgreSQL 16:</strong> `digibank_db` (Port 5435)</li>
+                            <li><strong>Cucumber BDD + JUnit 5</strong></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 3: Spring Boot Monolith</span>
+            <span>Slide 15 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 16: LAB 3 7 MAVEN MODULES STRUCTURE -->
+<div class="slide-container" id="slide16">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-network-wired"></i> Lab 3: Reactor Module Breakdown (`digibank-parent-spring`)</h2>
+        <div class="content-area">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Module</th>
+                        <th>Artifact / Package</th>
+                        <th>Spring Component Responsibilities</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>digibank-shared</code></td><td>JAR</td><td><code>BaseEntity</code> (@MappedSuperclass) & <code>ApiResponse&lt;T&gt;</code> generic wrapper</td></tr>
+                    <tr><td><code>digibank-customer</code></td><td>JAR</td><td><code>Customer</code>, <code>CustomerRepository</code> (JpaRepository), <code>CustomerService</code>, <code>CustomerController</code></td></tr>
+                    <tr><td><code>digibank-account</code></td><td>JAR</td><td><code>Account</code>, <code>AccountRepository</code>, <code>AccountService</code>, <code>AccountController</code></td></tr>
+                    <tr><td><code>digibank-transaction</code></td><td>JAR</td><td><code>Transaction</code>, <code>TransactionRepository</code>, <code>TransactionService</code>, <code>TransactionController</code></td></tr>
+                    <tr><td><code>digibank-compliance</code></td><td>JAR</td><td><code>ComplianceService</code> (&le; $10k validation), <code>ComplianceController</code>, Cucumber BDD suite</td></tr>
+                    <tr><td><code>digibank-index</code></td><td>JAR</td><td><code>IndexController</code> rendering dynamic Thymeleaf landing view (<code>templates/index.html</code>)</td></tr>
+                    <tr><td><code>digibank-app</code></td><td>WAR</td><td><code>DigiBankApplication</code> (SpringBootServletInitializer), OpenApiConfig, application.properties</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 3: Spring Boot Monolith</span>
+            <span>Slide 16 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 17: ENTERPRISE SPRING PATTERNS -->
+<div class="slide-container" id="slide17">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-code"></i> Enterprise Framework Patterns & Annotations</h2>
+        <div class="content-area">
+            <div class="two-column">
+                <div class="card card-accent-amber">
+                    <h3>Spring Data Repositories</h3>
+                    <p style="font-size: 15px;">Eliminates standard EntityManager boilerplate through declarative interfaces.</p>
+                    <div class="code-box">
+public interface AccountRepository 
+  extends JpaRepository&lt;Account, Long&gt; {
+    Optional&lt;Account&gt; findByAccountNumber(String accNum);
+}
+                    </div>
+                </div>
+                <div class="card card-accent-green">
+                    <h3>Declarative Transactions</h3>
+                    <p style="font-size: 15px;"><code>@Transactional</code> provides ACID boundary management across Spring services.</p>
+                    <div class="code-box">
+@Service
+public class TransactionService {
+    @Transactional
+    public TransactionDTO executeTransfer(...) { ... }
+}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 3: Spring Boot Monolith</span>
+            <span>Slide 17 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 18: MULTI-MODULE SCANNING PATTERN -->
+<div class="slide-container" id="slide18">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-eye"></i> Multi-Module Component Scanning Configuration</h2>
+        <div class="content-area">
+            <div class="card card-accent-blue">
+                <h3>Explicit Scanning Across Sibling Modules</h3>
+                <p style="font-size: 15px; margin-bottom: 12px;">Because the main execution class resides in <code>digibank-app</code>, explicit annotation config is required to discover components, JPA entities, and repositories located in sibling modules (e.g., <code>digibank-customer</code>).</p>
+                <div class="code-box">
+@SpringBootApplication
+@ComponentScan(basePackages = "com.digibank")
+@EntityScan(basePackages = "com.digibank")
+@EnableJpaRepositories(basePackages = "com.digibank")
+public class DigiBankApplication extends SpringBootServletInitializer {
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(DigiBankApplication.class);
+    }
+}
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 3: Spring Boot Monolith</span>
+            <span>Slide 18 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 19: LOGICAL DATA MODEL (PostgreSQL) -->
+<div class="slide-container" id="slide19">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-database"></i> Lab 3 Data Model & Mapping</h2>
+        <div class="content-area">
+            <div class="two-column">
+                <div>
+                    <h3>PostgreSQL Table Schema</h3>
+                    <p style="font-size: 14px; color: #64748b; margin-bottom: 10px;">Managed via Hibernate <code>snake_case</code> physical naming strategy:</p>
+                    <table>
+                        <thead>
+                            <tr><th>Table</th><th>Key Columns</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>customers</code></td><td>id (PK), first_name, last_name, email (UNIQUE)</td></tr>
+                            <tr><td><code>accounts</code></td><td>id (PK), account_number (UNIQUE), balance, customer_id (FK)</td></tr>
+                            <tr><td><code>transactions</code></td><td>id (PK), type, amount, account_id (FK), timestamp</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card card-accent-amber">
+                    <h3>Base Audit Inheritance</h3>
+                    <p style="font-size: 15px;">All entities inherit common primary keys and creation timestamps from the shared base class.</p>
+                    <div class="code-box">
+@MappedSuperclass
+public abstract class BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @Column(name = "created_at")
+    private LocalDateTime createdAt = LocalDateTime.now();
+}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 3: Spring Boot Monolith</span>
+            <span>Slide 19 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 20: REST API ENDPOINTS CATALOG -->
+<div class="slide-container" id="slide20">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-cloud"></i> REST API Catalog (Base: `/digibank-app/api`)</h2>
+        <div class="content-area">
+            <table>
+                <thead>
+                    <tr>
+                        <th>HTTP Method</th>
+                        <th>Endpoint Path</th>
+                        <th>Request / Response Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><span class="tag tag-green">POST</span></td><td>`/api/customers`</td><td>Create customer (`firstName`, `lastName`, `email`)</td></tr>
+                    <tr><td><span class="tag tag-blue">GET</span></td><td>`/api/customers` & `{id}`</td><td>Query all or specific customer profiles</td></tr>
+                    <tr><td><span class="tag tag-green">POST</span></td><td>`/api/accounts`</td><td>Open new bank account (`accountNumber`, `balance`)</td></tr>
+                    <tr><td><span class="tag tag-blue">GET</span></td><td>`/api/accounts` & `{id}`</td><td>Retrieve account balance & customer linkage</td></tr>
+                    <tr><td><span class="tag tag-green">POST</span></td><td>`/api/transactions`</td><td>Perform DEPOSIT, WITHDRAWAL, or TRANSFER</td></tr>
+                    <tr><td><span class="tag tag-blue">GET</span></td><td>`/api/compliance/validate/{amount}`</td><td>Returns `{"valid":true}` if amount &le; $10,000</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 3: Spring Boot Monolith</span>
+            <span>Slide 20 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 21: SWAGGER & OPENAPI -->
+<div class="slide-container" id="slide21">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-book-open"></i> Interactive API Documentation</h2>
+        <div class="content-area">
+            <div class="two-column">
+                <div class="card card-accent-green">
+                    <h3>Springdoc OpenAPI 2.8.17</h3>
+                    <p style="font-size: 15px;">Automated generation of OpenAPI 3.0 specification from REST controllers, eliminating manual API documentation overhead.</p>
+                    <div class="bullet-list" style="margin-top: 15px;">
+                        <ul>
+                            <li>Interactive testing via `/swagger-ui.html`.</li>
+                            <li>Real-time schema verification for DTOs.</li>
+                            <li>Customized API metadata via `OpenApiConfig`.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card card-accent-blue">
+                    <h3 style="margin-bottom: 15px;">Swagger UI Endpoint</h3>
+                    <div style="background: #0f172a; color: #38bdf8; padding: 20px; border-radius: 8px; font-family: monospace; font-size: 16px; word-break: break-all;">
+                        http://localhost:9091/digibank-app/swagger-ui.html
+                    </div>
+                    <p style="font-size: 14px; color: #64748b; margin-top: 15px;">Exposed transparently through external WildFly web context.</p>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 3: Spring Boot Monolith</span>
+            <span>Slide 21 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 22: TESTING & QUALITY ASSURANCE -->
+<div class="slide-container" id="slide22">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-vial-circle-check"></i> Testing Strategy & BDD Automation</h2>
+        <div class="content-area">
+            <div class="three-column">
+                <div class="card card-accent-blue">
+                    <h3>JUnit 5 Unit Tests</h3>
+                    <p style="font-size: 14px;"><code>ComplianceServiceTest</code> verifies boundary thresholds directly.</p>
+                    <ul style="font-size: 13px; padding-left: 15px; margin-top: 10px;">
+                        <li>$5,000 &rarr; <strong>valid: true</strong></li>
+                        <li>$10,000 &rarr; <strong>valid: true</strong></li>
+                        <li>$20,000 &rarr; <strong>valid: false</strong></li>
+                    </ul>
+                </div>
+                <div class="card card-accent-green">
+                    <h3>Cucumber BDD</h3>
+                    <p style="font-size: 14px;">Gherkin feature scenarios executed via <code>cucumber-junit-platform-engine</code>.</p>
+                    <p style="font-size: 13px; color: #047857; margin-top: 8px;">Scenario: Validate transaction limit under $10,000 threshold.</p>
+                </div>
+                <div class="card card-accent-amber">
+                    <h3>Static Analysis</h3>
+                    <p style="font-size: 14px;">Automated Checkstyle & PMD code formatting checks enforced during compilation.</p>
+                    <div class="code-box" style="font-size: 12px; margin-top: 8px;">
+mvn verify
+# Enforces zero policy violations
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 3: Spring Boot Monolith</span>
+            <span>Slide 22 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 23: CONTAINERIZATION & COEXISTENCE -->
+<div class="slide-container" id="slide23">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-box-archive"></i> Coexistence Infrastructure (`docker-compose.spring.yml`)</h2>
+        <div class="content-area">
+            <p style="margin-bottom: 15px;">Designed specifically to run <strong>simultaneously</strong> alongside Lab 2 without port collision:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Container Service</th>
+                        <th>Host Port Mapping</th>
+                        <th>Internal Port</th>
+                        <th>Service Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>db</code></td><td><strong>5435</strong> &rarr; 5432</td><td>5432</td><td>PostgreSQL 16 engine initialized via `db/init-spring.sql`</td></tr>
+                    <tr><td><code>wildfly</code></td><td><strong>9091</strong> &rarr; 8080</td><td>8080</td><td>WildFly 33 runtime holding `digibank-app.war`</td></tr>
+                    <tr><td><code>adminer</code></td><td><strong>8083</strong> &rarr; 8080</td><td>8080</td><td>Web database management UI for PostgreSQL</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 3: Spring Boot Monolith</span>
+            <span>Slide 23 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 24: SETUP-SPRING AUTOMATION SCRIPT -->
+<div class="slide-container" id="slide24">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-terminal"></i> Automation & Orchestration Script (`setup-spring.sh`)</h2>
+        <div class="content-area">
+            <div class="two-column">
+                <div class="card card-accent-amber">
+                    <h3>Single-Command Deployment</h3>
+                    <div class="code-box">
+./setup-spring.sh docker
+                    </div>
+                    <div class="bullet-list" style="margin-top: 15px;">
+                        <ul>
+                            <li>Triggers Maven clean compile & WAR build.</li>
+                            <li>Spins up Docker Compose services.</li>
+                            <li>Deploys WAR to WildFly deployment directory.</li>
+                            <li>Executes cURL verification against live endpoints.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card card-accent-blue">
+                    <h3>Live System Access Points</h3>
+                    <ul style="font-size: 15px; padding-left: 20px;">
+                        <li><strong>Thymeleaf Landing Page:</strong><br><code style="color: #0284c7;">http://localhost:9091/digibank-app</code></li>
+                        <li style="margin-top: 10px;"><strong>REST API Root:</strong><br><code style="color: #0284c7;">http://localhost:9091/digibank-app/api</code></li>
+                        <li style="margin-top: 10px;"><strong>Adminer Database UI:</strong><br><code style="color: #0284c7;">http://localhost:8083</code></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 3: Spring Boot Monolith</span>
+            <span>Slide 24 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 25: TECHNICAL CHALLENGE 1 -->
+<div class="slide-container" id="slide25">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-triangle-exclamation"></i> Challenge 1: Multi-Module Component Scanning</h2>
+        <div class="content-area">
+            <div class="card card-accent-amber">
+                <div style="display: flex; gap: 15px; align-items: flex-start;">
+                    <div style="background: #fef3c7; color: #b45309; padding: 10px 15px; border-radius: 8px; font-weight: 800;">ISSUE</div>
+                    <div>
+                        <p style="margin: 0; font-size: 16px;">Main application class in <code>digibank-app</code> failed to discover Spring beans and JPA entities located in sibling modules (e.g., <code>digibank-customer</code>, <code>digibank-account</code>) during startup.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card card-accent-green" style="margin-top: 20px;">
+                <div style="display: flex; gap: 15px; align-items: flex-start;">
+                    <div style="background: #d1fae5; color: #047857; padding: 10px 15px; border-radius: 8px; font-weight: 800;">SOLUTION</div>
+                    <div>
+                        <p style="margin: 0; font-size: 16px;">Configured explicit package root scanning annotations on the main application boot class:</p>
+                        <div class="code-box" style="margin-top: 10px;">
+@ComponentScan(basePackages = "com.digibank")
+@EntityScan(basePackages = "com.digibank")
+@EnableJpaRepositories(basePackages = "com.digibank")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 3: Key Oral Challenges Solved</span>
+            <span>Slide 25 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 26: TECHNICAL CHALLENGE 2 -->
+<div class="slide-container" id="slide26">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-triangle-exclamation"></i> Challenge 2: `@PathVariable` Reflection Name Resolution</h2>
+        <div class="content-area">
+            <div class="card card-accent-amber">
+                <div style="display: flex; gap: 15px; align-items: flex-start;">
+                    <div style="background: #fef3c7; color: #b45309; padding: 10px 15px; border-radius: 8px; font-weight: 800;">ISSUE</div>
+                    <div>
+                        <p style="margin: 0; font-size: 16px;">HTTP 500 runtime errors on WildFly when invoking endpoints like <code>/api/customers/{id}</code> because Java compiler omitted method parameter names from class bytecodes.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card card-accent-green" style="margin-top: 20px;">
+                <div style="display: flex; gap: 15px; align-items: flex-start;">
+                    <div style="background: #d1fae5; color: #047857; padding: 10px 15px; border-radius: 8px; font-weight: 800;">SOLUTION</div>
+                    <div>
+                        <p style="margin: 0; font-size: 16px;">Injected the <code>&lt;parameters&gt;true&lt;/parameters&gt;</code> flag into the parent <code>maven-compiler-plugin</code> configuration to preserve method reflection parameter names.</p>
+                        <div class="code-box" style="margin-top: 10px;">
+&lt;plugin&gt;
+    &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+    &lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt;
+    &lt;configuration&gt;&lt;parameters&gt;true&lt;/parameters&gt;&lt;/configuration&gt;
+&lt;/plugin&gt;
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 3: Key Oral Challenges Solved</span>
+            <span>Slide 26 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 27: TECHNICAL CHALLENGE 3 -->
+<div class="slide-container" id="slide27">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-triangle-exclamation"></i> Challenge 3: Column Naming Strategy Mismatch</h2>
+        <div class="content-area">
+            <div class="card card-accent-amber">
+                <div style="display: flex; gap: 15px; align-items: flex-start;">
+                    <div style="background: #fef3c7; color: #b45309; padding: 10px 15px; border-radius: 8px; font-weight: 800;">ISSUE</div>
+                    <div>
+                        <p style="margin: 0; font-size: 16px;">Lab 2 `init.sql` created camelCase database columns (e.g., <code>firstName</code>) which clashed with Hibernate 6 default physical naming strategy that translates properties to <code>snake_case</code> (e.g., <code>first_name</code>).</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card card-accent-green" style="margin-top: 20px;">
+                <div style="display: flex; gap: 15px; align-items: flex-start;">
+                    <div style="background: #d1fae5; color: #047857; padding: 10px 15px; border-radius: 8px; font-weight: 800;">SOLUTION</div>
+                    <div>
+                        <p style="margin: 0; font-size: 16px;">Created a dedicated <code>db/init-spring.sql</code> script for database/user creation only, allowing Hibernate's <code>spring.jpa.hibernate.ddl-auto=update</code> to generate matching physical tables automatically.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 3: Key Oral Challenges Solved</span>
+            <span>Slide 27 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 28: TECHNICAL CHALLENGE 4 -->
+<div class="slide-container" id="slide28">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-triangle-exclamation"></i> Challenge 4: External WAR Deployment on WildFly</h2>
+        <div class="content-area">
+            <div class="card card-accent-amber">
+                <div style="display: flex; gap: 15px; align-items: flex-start;">
+                    <div style="background: #fef3c7; color: #b45309; padding: 10px 15px; border-radius: 8px; font-weight: 800;">ISSUE</div>
+                    <div>
+                        <p style="margin: 0; font-size: 16px;">Deployment conflicts on WildFly due to embedded Tomcat starter classes bundling servlet containers and logging jars inside the WAR package.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card card-accent-green" style="margin-top: 20px;">
+                <div style="display: flex; gap: 15px; align-items: flex-start;">
+                    <div style="background: #d1fae5; color: #047857; padding: 10px 15px; border-radius: 8px; font-weight: 800;">SOLUTION</div>
+                    <div>
+                        <p style="margin: 0; font-size: 16px;">Marked embedded web container dependencies as <code>&lt;scope&gt;provided&lt;/scope&gt;</code> and extended <code>SpringBootServletInitializer</code> in the primary boot class.</p>
+                        <div class="code-box" style="margin-top: 10px;">
+&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-tomcat&lt;/artifactId&gt;
+    &lt;scope&gt;provided&lt;/scope&gt;
+&lt;/dependency&gt;
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 3: Key Oral Challenges Solved</span>
+            <span>Slide 28 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 29: TECHNICAL CHALLENGE 5 -->
+<div class="slide-container" id="slide29">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-triangle-exclamation"></i> Challenge 5: Idempotent REST Script Testing</h2>
+        <div class="content-area">
+            <div class="card card-accent-amber">
+                <div style="display: flex; gap: 15px; align-items: flex-start;">
+                    <div style="background: #fef3c7; color: #b45309; padding: 10px 15px; border-radius: 8px; font-weight: 800;">ISSUE</div>
+                    <div>
+                        <p style="margin: 0; font-size: 16px;">Automated execution of <code>setup-spring.sh</code> threw duplicate key SQL constraints on unique fields (email, account number) when re-run multiple times.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card card-accent-green" style="margin-top: 20px;">
+                <div style="display: flex; gap: 15px; align-items: flex-start;">
+                    <div style="background: #d1fae5; color: #047857; padding: 10px 15px; border-radius: 8px; font-weight: 800;">SOLUTION</div>
+                    <div>
+                        <p style="margin: 0; font-size: 16px;">Updated script cURL payloads to append dynamic epoch timestamps and random suffixes to test entities, ensuring 100% idempotent test passes.</p>
+                        <div class="code-box" style="margin-top: 10px;">
+EMAIL="john.doe.$(date +%s)@digibank.com"
+ACC_NUM="ACC-$(date +%s)"
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 3: Key Oral Challenges Solved</span>
+            <span>Slide 29 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 30: LAB 4 SECTION -->
+<div class="slide-container" id="slide30">
+    <div class="content-wrapper">
+        <div class="section-title-layout">
+            <span class="tag tag-purple">PART FOUR</span>
+            <h2>LAB 4: MICROSERVICES ARCHITECTURE</h2>
+            <div class="section-divider" style="background: #8b5cf6;"></div>
+            <p>Decomposition, Service Discovery, Central Config, API Gateway & Distributed Saga Coordination</p>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 4: Cloud-Native Microservices</span>
+            <span>Slide 30 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 31: LAB 4 DECOMPOSITION RATIONALE -->
+<div class="slide-container" id="slide31">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-scissors"></i> Why Decompose the Monolith?</h2>
+        <div class="content-area">
+            <div class="two-column">
+                <div class="bullet-list">
+                    <h3>Architectural Drivers</h3>
+                    <ul>
+                        <li><strong>Independent Scalability:</strong> Scale high-volume transaction processing independently of customer management.</li>
+                        <li><strong>Fault Isolation:</strong> Notification service crashes do not disrupt core balance consultations.</li>
+                        <li><strong>Database per Service:</strong> Eliminates shared database bottlenecks and tight schema coupling.</li>
+                        <li><strong>Autonomous Deployments:</strong> Update compliance rules without re-deploying the full banking platform.</li>
+                    </ul>
+                </div>
+                <div class="metric-card" style="border-top: 4px solid #8b5cf6;">
+                    <div class="metric-value" style="color: #8b5cf6;">8</div>
+                    <div class="metric-label">Autonomous Microservices</div>
+                    <p style="font-size: 14px; color: #64748b; margin-top: 15px;">Decoupled business domains & cloud infrastructure components.</p>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 4: Cloud-Native Microservices</span>
+            <span>Slide 31 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 32: MICROSERVICES INVENTORY -->
+<div class="slide-container" id="slide32">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-server"></i> Microservices Ecosystem Inventory</h2>
+        <div class="content-area">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Microservice</th>
+                        <th>Port</th>
+                        <th>Key Role & Technology</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>api-gateway</code></td><td>8080</td><td>Spring Cloud Gateway, routing & centralized entry point</td></tr>
+                    <tr><td><code>discovery-server</code></td><td>8761</td><td>Netflix Eureka Service Registry</td></tr>
+                    <tr><td><code>config-server</code></td><td>8888</td><td>Spring Cloud Config (Native local configuration repo)</td></tr>
+                    <tr><td><code>customer-service</code></td><td>8081</td><td>Customer domain database & REST management</td></tr>
+                    <tr><td><code>account-service</code></td><td>8082</td><td>Account balance updates & database per service</td></tr>
+                    <tr><td><code>transaction-service</code></td><td>8083</td><td>Transfer execution, CQRS Command/Query & Saga coordination</td></tr>
+                    <tr><td><code>compliance-service</code></td><td>8084</td><td>Rule engine (&le; $10k transfer cap)</td></tr>
+                    <tr><td><code>notification-service</code></td><td>8085</td><td>Asynchronous transfer event alert dispatch</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 4: Cloud-Native Microservices</span>
+            <span>Slide 32 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 33: CLOUD INFRASTRUCTURE & DISCOVERY -->
+<div class="slide-container" id="slide33">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-network-wired"></i> Discovery & API Gateway Integration</h2>
+        <div class="content-area">
+            <div class="two-column">
+                <div class="card card-accent-blue">
+                    <h3>Service Discovery (Eureka)</h3>
+                    <p style="font-size: 14px;">Services register dynamically with <code>discovery-server</code> on port 8761. Eliminates hardcoded host IP references across components.</p>
+                    <div class="code-box" style="margin-top: 10px; font-size: 12px;">
+eureka.client.service-url.defaultZone=
+http://localhost:8761/eureka/
+                    </div>
+                </div>
+                <div class="card card-accent-purple">
+                    <h3>API Gateway (Port 8080)</h3>
+                    <p style="font-size: 14px;">Single unified public exposure layer. Routes incoming <code>/api/**</code> requests dynamically using Eureka service instances.</p>
+                    <div class="code-box" style="margin-top: 10px; font-size: 12px;">
+spring.cloud.gateway.routes[0].id=account-service
+spring.cloud.gateway.routes[0].uri=lb://ACCOUNT-SERVICE
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 4: Cloud-Native Microservices</span>
+            <span>Slide 33 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 34: RESILIENCE4J & CIRCUIT BREAKER -->
+<div class="slide-container" id="slide34">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-shield-halved"></i> Fault Tolerance & Resilience4j</h2>
+        <div class="content-area">
+            <div class="two-column">
+                <div class="card card-accent-amber">
+                    <h3>Circuit Breaker Pattern</h3>
+                    <p style="font-size: 15px;">Prevents cascading failures across distributed REST boundaries when invoking remote services (e.g., Compliance or Account).</p>
+                    <div class="bullet-list" style="margin-top: 12px;">
+                        <ul>
+                            <li><strong>CLOSED:</strong> Normal RPC executions pass through.</li>
+                            <li><strong>OPEN:</strong> Short-circuits failing remote endpoints.</li>
+                            <li><strong>HALF-OPEN:</strong> Probes remote service recovery.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card card-accent-green">
+                    <h3>Fallback Mechanism</h3>
+                    <p style="font-size: 15px;">Executes safe default business fallback when remote service times out or fails.</p>
+                    <div class="code-box" style="margin-top: 10px;">
+@CircuitBreaker(name = "complianceCB", 
+                fallbackMethod = "complianceFallback")
+public boolean validateTransfer(BigDecimal amt) {
+    return complianceClient.validate(amt);
+}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 4: Cloud-Native Microservices</span>
+            <span>Slide 34 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 35: SAGA PATTERN FOR TRANSFERS -->
+<div class="slide-container" id="slide35">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-arrows-spin"></i> Distributed Saga Orchestration Flow</h2>
+        <div class="content-area">
+            <div class="flow-grid">
+                <div class="flow-step">
+                    <span class="tag tag-blue">Step 1</span>
+                    <h4 style="font-size: 15px; margin-top: 5px;">Compliance Check</h4>
+                    <p style="font-size: 12px; margin: 0;">Validate limit &le; $10k</p>
+                </div>
+                <div class="flow-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+                <div class="flow-step">
+                    <span class="tag tag-amber">Step 2</span>
+                    <h4 style="font-size: 15px; margin-top: 5px;">Debit Account</h4>
+                    <p style="font-size: 12px; margin: 0;">Deduct source balance</p>
+                </div>
+                <div class="flow-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+                <div class="flow-step">
+                    <span class="tag tag-green">Step 3</span>
+                    <h4 style="font-size: 15px; margin-top: 5px;">Credit Account</h4>
+                    <p style="font-size: 12px; margin: 0;">Credit target balance</p>
+                </div>
+            </div>
+            <div class="alert-box" style="margin-top: 25px;">
+                <strong>Compensating Transaction:</strong> If Step 3 (Credit) fails, an automated refund compensating event triggers on Step 2 to restore source account balance, guaranteeing ultimate consistency.
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 4: Cloud-Native Microservices</span>
+            <span>Slide 35 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 36: CQRS IMPLEMENTATION -->
+<div class="slide-container" id="slide36">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-layer-group"></i> CQRS Pattern Implementation</h2>
+        <div class="content-area">
+            <div class="two-column">
+                <div class="card card-accent-blue">
+                    <h3>Command Side (Writes)</h3>
+                    <p style="font-size: 15px;">Handles write transactions, debits, credits, and state mutations.</p>
+                    <div class="bullet-list" style="margin-top: 10px;">
+                        <ul>
+                            <li><code>TransactionCommandHandler</code></li>
+                            <li>Ensures ACID consistency on state writes.</li>
+                            <li>Publishes domain completion events.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card card-accent-green">
+                    <h3>Query Side (Reads)</h3>
+                    <p style="font-size: 15px;">Optimized read models for balance inquiries and audit logs.</p>
+                    <div class="bullet-list" style="margin-top: 10px;">
+                        <ul>
+                            <li><code>TransactionQueryService</code></li>
+                            <li>Bypasses heavy write locks for audit views.</li>
+                            <li>Scales read operations independently.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 4: Cloud-Native Microservices</span>
+            <span>Slide 36 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 37: LAB 4 DOCKER ORCHESTRATION -->
+<div class="slide-container" id="slide37">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-boxes-packing"></i> Lab 4: Docker Orchestration Grid</h2>
+        <div class="content-area">
+            <div class="two-column">
+                <div class="card card-accent-purple">
+                    <h3>13 Container Ecosystem</h3>
+                    <ul style="font-size: 14px; padding-left: 18px;">
+                        <li>8 Microservices (Spring Boot Bootable JARs)</li>
+                        <li>5 Dedicated PostgreSQL instances (Database per service)</li>
+                        <li>Host Port Mappings: 8080 (Gateway), 8761 (Eureka), 8888 (Config)</li>
+                        <li>Database Ports: 5433 &ndash; 5437</li>
+                    </ul>
+                </div>
+                <div class="card card-accent-blue">
+                    <h3>Unified Public Portal</h3>
+                    <p style="font-size: 15px;">The Gateway consolidates external access to all 8 service Swagger UIs under one domain:</p>
+                    <div style="background: #0f172a; color: #38bdf8; padding: 12px; border-radius: 6px; font-family: monospace; font-size: 14px; margin-top: 10px;">
+http://localhost:8080
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Lab 4: Cloud-Native Microservices</span>
+            <span>Slide 37 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 38: FRAMEWORK COMPARISON -->
+<div class="slide-container" id="slide38">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-scale-balanced"></i> Architectural Comparison: EE vs Spring</h2>
+        <div class="content-area">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Dimension</th>
+                        <th>Lab 2: Jakarta EE 10</th>
+                        <th>Lab 3: Spring Boot 3.5</th>
+                        <th>Lab 4: Spring Cloud</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Architecture</strong></td><td>Modular Monolith</td><td>Modular Monolith</td><td>Microservices</td></tr>
+                    <tr><td><strong>Dependency Injection</strong></td><td>CDI 4.0 (@Inject)</td><td>Spring DI (@Autowired)</td><td>Spring DI</td></tr>
+                    <tr><td><strong>Data Access</strong></td><td>JPA / EJB EntityManager</td><td>Spring Data JPA</td><td>Spring Data (Database per service)</td></tr>
+                    <tr><td><strong>Deployment</strong></td><td>External WildFly WAR</td><td>External WildFly WAR</td><td>Docker Containerized Bootable JARs</td></tr>
+                    <tr><td><strong>Service Discovery</strong></td><td>N/A (Monolithic)</td><td>N/A (Monolithic)</td><td>Netflix Eureka Registry</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="slide-footer">
+            <span>Cross-Lab Analysis</span>
+            <span>Slide 38 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 39: EVOLUTION SUMMARY -->
+<div class="slide-container" id="slide39">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-chart-line"></i> Progression Synthesis Across Labs</h2>
+        <div class="content-area">
+            <div class="flow-grid">
+                <div class="card card-accent-blue">
+                    <h3>Lab 1: Design</h3>
+                    <p style="font-size: 13px;">Requirements, boundary definitions & baseline blueprinting.</p>
+                </div>
+                <div class="card card-accent-green">
+                    <h3>Lab 2: EE Monolith</h3>
+                    <p style="font-size: 13px;">Standards-based enterprise application server implementation.</p>
+                </div>
+                <div class="card card-accent-amber">
+                    <h3>Lab 3: Spring Monolith</h3>
+                    <p style="font-size: 13px;">Framework modernization & OpenAPI documentation.</p>
+                </div>
+                <div class="card card-accent-purple">
+                    <h3>Lab 4: Cloud Native</h3>
+                    <p style="font-size: 13px;">Distributed resilience, Sagas & container orchestration.</p>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Summary</span>
+            <span>Slide 39 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 40: LESSONS LEARNED -->
+<div class="slide-container" id="slide40">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-lightbulb"></i> Key Engineering Lessons Learned</h2>
+        <div class="content-area">
+            <div class="bullet-list">
+                <ul>
+                    <li><strong>Clean Domain Boundaries Pay Off:</strong> Maintaining strict module separation in Labs 2 & 3 enabled seamless microservice decomposition in Lab 4.</li>
+                    <li><strong>Framework Interoperability:</strong> Business entities and validation logic transfer cleanly between Jakarta EE and Spring Boot.</li>
+                    <li><strong>Distributed Systems Require Resilience:</strong> Monolithic in-memory calls must be replaced with Circuit Breakers and Sagas in cloud environments.</li>
+                    <li><strong>DevOps Automation is Non-Negotiable:</strong> Docker Compose and shell orchestration scripts (`setup-spring.sh`) ensure repeatable deployments.</li>
+                </ul>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Summary</span>
+            <span>Slide 40 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 41: CONCLUSION -->
+<div class="slide-container" id="slide41">
+    <div class="content-wrapper">
+        <h2 class="slide-title"><i class="fa-solid fa-flag-checkered"></i> Conclusion</h2>
+        <div class="content-area">
+            <div class="card card-accent-blue" style="padding: 30px; text-align: center;">
+                <h3 style="font-size: 26px; color: #0284c7; margin-bottom: 15px;">Digi Bank Architectural Modernization Complete</h3>
+                <p style="font-size: 18px; line-height: 1.6; max-width: 900px; margin: 0 auto;">
+                    The Digi Bank platform successfully demonstrates the complete cloud computing maturity cycle: from rigorous domain analysis and enterprise modular monoliths (Jakarta EE & Spring Boot) to a resilient, containerized Spring Cloud microservices architecture.
+                </p>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>Summary</span>
+            <span>Slide 41 / 42</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 42: Q&A -->
+<div class="slide-container" id="slide42">
+    <div class="content-wrapper">
+        <div class="section-title-layout">
+            <span class="tag tag-blue" style="font-size: 16px; padding: 8px 20px;">THANK YOU</span>
+            <h2 style="font-size: 64px;">Questions & Discussion</h2>
+            <div class="section-divider"></div>
+            <p style="font-size: 22px; font-weight: 600; color: #0284c7;">Digi Bank Cloud Architecture Presentation</p>
+            <p style="font-size: 16px; color: #64748b; margin-top: 10px;">UCC 122-1 Cloud Architecture | University of the Mountains (UDM)</p>
+        </div>
+
+        
+        <div class="slide-footer">
+            <span>Digi Bank Engineering</span>
+            <span>Slide 42 / 42</span>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  const track = document.querySelector('.labs-track');
+  const slides = Array.from(track.children);
+  let index = 0;
+  function update(){
+    track.style.transform = `translateX(-${index * 100}%)`;
+  }
+  document.querySelector('.arrow-left').addEventListener('click',()=>{ if(index>0){ index--; update(); } });
+  document.querySelector('.arrow-right').addEventListener('click',()=>{ if(index<slides.length-1){ index++; update(); } });
+});
+</script>
+</body>
+</html>
