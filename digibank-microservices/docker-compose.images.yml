@@ -1,46 +1,25 @@
 services:
   discovery-server:
-    build:
-      context: .
-      dockerfile: discovery-server/Dockerfile
+    image: ghcr.io/nkwatambe/digibank-discovery-server:latest
     ports:
       - "8761:8761"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
-      interval: 5s
-      timeout: 5s
-      retries: 30
-      start_period: 20s
 
   config-server:
-    build:
-      context: .
-      dockerfile: config-server/Dockerfile
+    image: ghcr.io/nkwatambe/digibank-config-server:latest
     ports:
       - "8888:8888"
     depends_on:
-      discovery-server:
-        condition: service_healthy
+      - discovery-server
     environment:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
-      interval: 5s
-      timeout: 5s
-      retries: 30
-      start_period: 20s
 
   api-gateway:
-    build:
-      context: .
-      dockerfile: api-gateway/Dockerfile
+    image: ghcr.io/nkwatambe/digibank-api-gateway:latest
     ports:
       - "8080:8080"
     depends_on:
-      discovery-server:
-        condition: service_healthy
-      config-server:
-        condition: service_healthy
+      - discovery-server
+      - config-server
     environment:
       SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
@@ -101,18 +80,13 @@ services:
       - notification_data:/var/lib/postgresql/data
 
   customer-service:
-    build:
-      context: .
-      dockerfile: customer-service/Dockerfile
+    image: ghcr.io/nkwatambe/digibank-customer-service:latest
     ports:
       - "8081:8081"
     depends_on:
-      customer-db:
-        condition: service_started
-      discovery-server:
-        condition: service_healthy
-      config-server:
-        condition: service_healthy
+      - customer-db
+      - discovery-server
+      - config-server
     environment:
       SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
@@ -120,18 +94,13 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
 
   account-service:
-    build:
-      context: .
-      dockerfile: account-service/Dockerfile
+    image: ghcr.io/nkwatambe/digibank-account-service:latest
     ports:
       - "8082:8082"
     depends_on:
-      account-db:
-        condition: service_started
-      discovery-server:
-        condition: service_healthy
-      config-server:
-        condition: service_healthy
+      - account-db
+      - discovery-server
+      - config-server
     environment:
       SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
@@ -139,22 +108,14 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
 
   transaction-service:
-    build:
-      context: .
-      dockerfile: transaction-service/Dockerfile
+    image: ghcr.io/nkwatambe/digibank-transaction-service:latest
     ports:
       - "8083:8083"
     depends_on:
-      transaction-db:
-        condition: service_started
-      account-service:
-        condition: service_started
-      compliance-service:
-        condition: service_started
-      notification-service:
-        condition: service_started
-      config-server:
-        condition: service_healthy
+      - transaction-db
+      - account-service
+      - compliance-service
+      - notification-service
     environment:
       SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
@@ -162,18 +123,13 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
 
   compliance-service:
-    build:
-      context: .
-      dockerfile: compliance-service/Dockerfile
+    image: ghcr.io/nkwatambe/digibank-compliance-service:latest
     ports:
       - "8084:8084"
     depends_on:
-      compliance-db:
-        condition: service_started
-      discovery-server:
-        condition: service_healthy
-      config-server:
-        condition: service_healthy
+      - compliance-db
+      - discovery-server
+      - config-server
     environment:
       SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
@@ -181,18 +137,13 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
 
   notification-service:
-    build:
-      context: .
-      dockerfile: notification-service/Dockerfile
+    image: ghcr.io/nkwatambe/digibank-notification-service:latest
     ports:
       - "8085:8085"
     depends_on:
-      notification-db:
-        condition: service_started
-      discovery-server:
-        condition: service_healthy
-      config-server:
-        condition: service_healthy
+      - notification-db
+      - discovery-server
+      - config-server
     environment:
       SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/

@@ -184,7 +184,7 @@ test_endpoints() {
         "{\"accountNumber\":\"ACC-MICRO-${suffix}\",\"balance\":2500.00}"
     test_endpoint "GET" "$base/accounts" "/api/accounts (list)"
     test_endpoint "POST" "$base/transactions" "/api/transactions (create)" \
-        '{"type":"DEPOSIT","amount":7500.00}'
+        '{"type":"DEPOSIT","amount":7500.00,"accountId":1}'
     test_endpoint "GET" "$base/transactions" "/api/transactions (list)"
     test_endpoint "GET" "$base/compliance/validate/5000" "/api/compliance/validate/5000"
     test_endpoint "GET" "$base/compliance/validate/25000" "/api/compliance/validate/25000"
@@ -213,9 +213,44 @@ run_docker() {
     local max_wait=180
     local waited=0
     while [ $waited -lt $max_wait ]; do
-        if curl -s -o /dev/null "http://localhost:${GATEWAY_PORT}/api/customers" 2>/dev/null; then
+        local code
+        code=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:${GATEWAY_PORT}/api/customers" 2>/dev/null || echo "000")
+        if [ "$code" = "200" ]; then
             echo ""
             print_step "Microservices system active and responsive!"
+            print_info "Waiting for all services to register in Eureka..."
+            local reg_wait=120
+            local reg_elapsed=0
+            while [ $reg_elapsed -lt $reg_wait ]; do
+                local registered
+                registered=$(curl -s "http://localhost:${EUREKA_PORT}/eureka/apps" 2>/dev/null | grep -oE '<name>[^<]+</name>' | grep -cE 'CUSTOMER|ACCOUNT|TRANSACTION|COMPLIANCE|NOTIFICATION' || true)
+                if [ "$registered" -ge 5 ]; then
+                    print_step "All 5 business services registered in Eureka."
+                    break
+                fi
+                sleep 3
+                reg_elapsed=$((reg_elapsed + 3))
+            done
+            print_info "Waiting for API Gateway to route to all services..."
+            local gw_wait=120
+            local gw_elapsed=0
+            while [ $gw_elapsed -lt $gw_wait ]; do
+                local all_ok=1
+                for route in customers accounts transactions compliance/validate/5000 notifications; do
+                    local rc
+                    rc=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:${GATEWAY_PORT}/api/$route" 2>/dev/null || echo "000")
+                    if [ "$rc" != "200" ]; then
+                        all_ok=0
+                        break
+                    fi
+                done
+                if [ "$all_ok" = "1" ]; then
+                    print_step "All gateway routes responding with HTTP 200."
+                    break
+                fi
+                sleep 3
+                gw_elapsed=$((gw_elapsed + 3))
+            done
             sleep 2
             test_endpoints
             print_header "Microservices Docker Setup Complete! 🎉"
