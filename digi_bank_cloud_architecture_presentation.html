@@ -312,21 +312,21 @@
                     <h3>Cloud Architecture</h3>
                     <p><strong>Nancy Muneh</strong></p>
                     <p style="font-size: 13px; color: #0284c7; font-weight: 700; margin: 4px 0;">Presenter 1 (Slides 1–8)</p>
-                    <p style="font-size: 13px; margin-top: 6px;">Domain: System Blueprinting, Lab 1 Requirements & Scope Baseline.</p>
+                    <p style="font-size: 13px; margin-top: 6px;">Domain: Project Overview, Architecture Blueprint & Lab 1 Requirements.</p>
                 </div>
                 <div class="card card-accent-green">
                     <div class="icon"><i class="fa-solid fa-code"></i></div>
                     <h3>Jakarta EE & Java</h3>
-                    <p><strong>Ful Valentine</strong></p>
-                    <p style="font-size: 13px; color: #047857; font-weight: 700; margin: 4px 0;">Presenter 2 (Slides 9–14a)</p>
+                    <p><strong>Bryan Dino</strong></p>
+                    <p style="font-size: 13px; color: #0369a1; font-weight: 700; margin: 4px 0;">Presenter 2 (Slides 9–14a)</p>
                     <p style="font-size: 13px; margin-top: 6px;">Domain: Lab 2 Enterprise Monolith, CDI, EJB, JPA & WildFly integration.</p>
                 </div>
                 <div class="card card-accent-amber">
                     <div class="icon"><i class="fa-solid fa-gears"></i></div>
                     <h3>DevOps & Infra</h3>
-                    <p><strong>Tchikaya Ariel</strong></p>
-                    <p style="font-size: 13px; color: #b45309; font-weight: 700; margin: 4px 0;">Presenter 3 (Slides 15a–20)</p>
-                    <p style="font-size: 13px; margin-top: 6px;">Domain: Docker Compose, setup.sh, Real-world Challenges & Lab 3 Intro.</p>
+                    <p><strong>Ful Valentine</strong></p>
+                    <p style="font-size: 13px; color: #047857; font-weight: 700; margin: 4px 0;">Presenter 3 (Slides 15a–20)</p>
+                    <p style="font-size: 13px; margin-top: 6px;">Domain: Docker Compose, setup.sh, Real‑world Challenges & Lab 3 Intro.</p>
                 </div>
             </div>
             <div class="two-column" style="margin-top: 20px;">
@@ -340,15 +340,15 @@
                 <div class="card card-accent-blue">
                     <div class="icon"><i class="fa-solid fa-network-wired"></i></div>
                     <h3>Microservices & Sagas</h3>
-                    <p><strong>Bryan Dino</strong></p>
-                    <p style="font-size: 13px; color: #0369a1; font-weight: 700; margin: 4px 0;">Presenter 5 (Slides 30–42)</p>
+                    <p><strong>Tchikaya Ariel</strong></p>
+                    <p style="font-size: 13px; color: #0284c7; font-weight: 700; margin: 4px 0;">Presenter 5 (Slides 30–42)</p>
                     <p style="font-size: 13px; margin-top: 6px;">Domain: Eureka, API Gateway, Resilience4j, Sagas & Synthesis.</p>
                 </div>
             </div>
         </div>
         <div class="slide-footer">
             <span>Digi Bank Engineering</span>
-            <span>Speaker: Nancy Muneh</span>
+            <span>Speaker: Bryan Dino</span>
             <span>Slide 2 / 42</span>
         </div>
     </div>
@@ -405,6 +405,7 @@
             <h2>LAB 1: ARCHITECTURE FOUNDATION</h2>
             <div class="section-divider"></div>
             <p>Domain Analysis, Stakeholders, Business Functions & Initial System Blueprint</p>
+            <p>Lab 1 establishes the foundational architecture for Digi Bank, defining the business domain, stakeholder matrix, functional scope, and non-functional constraints. It delivers a high-level system blueprint and a modular monolith design that guides the subsequent implementation in Lab 2.</p>
         </div>
         <div class="slide-footer">
             <span>Lab 1: Requirements & Architecture</span>
@@ -438,6 +439,11 @@
                             <li>Functional vs Non-Functional Requirements breakdown.</li>
                             <li>Logical Data Model and entity relation baseline.</li>
                             <li>Technology selection matrix for Lab 2 implementation.</li>
+                    </ul>
+                    <ul class="bullet-list">
+                        <li>Understand domain modeling and stakeholder analysis.</li>
+                        <li>Apply modular monolith design principles.</li>
+                        <li>Produce comprehensive architecture documentation.</li>
                         </ul>
                     </div>
                 </div>
@@ -572,7 +578,16 @@
             <h2>LAB 2: JAKARTA EE 10 IMPLEMENTATION</h2>
             <div class="section-divider" style="background: #10b981;"></div>
             <p>Enterprise Java Standards, Application Server Deployment & CDI/EJB Integration</p>
-        </div>
+            <p>Lab 2 implements the architecture defined in Lab 1 using Jakarta EE 10 standards. A multi-module Maven reactor is built, deployed on WildFly 33, and integrated with PostgreSQL. The implementation showcases CDI, EJB, JPA, and JAX-RS for enterprise-grade components.</p>
+    <div class="bullet-list">
+      <ul>
+        <li><strong>Implement Jakarta EE 10 standards</strong> using CDI, EJB, JPA, and JAX-RS.</li>
+        <li><strong>Deploy a modular monolith</strong> on WildFly 33 with PostgreSQL container.</li>
+        <li><strong>Apply integration and BDD testing</strong> with JUnit 5, Arquillian, and Cucumber.</li>
+        <li><strong>Demonstrate service isolation</strong> and transaction handling in a monolith.</li>
+      </ul>
+    </div>
+    </div>
         <div class="slide-footer">
             <span>Lab 2: Jakarta EE 10 Monolith</span>
             <span>Slide 9 / 42</span>
@@ -817,6 +832,15 @@ services:<br>
             <h2>LAB 3: SPRING BOOT MODULAR MONOLITH</h2>
             <div class="section-divider" style="background: #f59e0b;"></div>
             <p>Framework Portability, Spring Ecosystem Modernization, OpenAPI & WildFly WAR Deployment</p>
+            <p>Lab 3 migrates the same functional baseline to the Spring ecosystem, rebuilding the modular monolith with Spring Boot 3.5, Spring Data JPA, and OpenAPI while preserving the Maven module structure.</p>
+        <div class="bullet-list">
+          <ul>
+            <li><strong>Port Jakarta EE monolith to Spring Boot 3.5</strong>, preserving domain logic and module structure.</li>
+            <li><strong>Leverage Spring Data JPA and Spring MVC</strong> for data access and REST endpoints.</li>
+            <li><strong>Generate OpenAPI documentation</strong> and integrate Swagger UI.</li>
+            <li><strong>Validate migration with integration and BDD tests</strong> using Spring Test, MockMvc, and Cucumber.</li>
+          </ul>
+        </div>
         </div>
         <div class="slide-footer">
             <span>Lab 3: Spring Boot Monolith</span>
@@ -1023,6 +1047,13 @@ public class DigiBankApplication extends SpringBootServletInitializer {
                             <tr><td><code>transactions</code></td><td>id (PK), type, amount, account_id (FK), timestamp</td></tr>
                         </tbody>
                     </table>
+                <p>Lab 4 extends the architecture to a cloud‑native microservices ecosystem. Services are decomposed, registered with Netflix Eureka, exposed via an API Gateway, and coordinated with the Saga pattern. Docker Compose orchestrates the containers and enables independent scaling.</p>
+                <ul class="bullet-list">
+                    <li>Implement service discovery with Eureka.</li>
+                    <li>Expose a unified API through the Gateway.</li>
+                    <li>Apply saga orchestration for distributed transactions.</li>
+                    <li>Containerize each service and manage deployment with Docker Compose.</li>
+                </ul>
                 </div>
                 <div class="card card-accent-amber">
                     <h3>Base Audit Inheritance</h3>
@@ -1650,7 +1681,16 @@ http://localhost:8080
                     <tr><td><strong>Data Access</strong></td><td>JPA / EJB EntityManager</td><td>Spring Data JPA</td><td>Spring Data (Database per service)</td></tr>
                     <tr><td><strong>Deployment</strong></td><td>External WildFly WAR</td><td>External WildFly WAR</td><td>Docker Containerized Bootable JARs</td></tr>
                     <tr><td><strong>Service Discovery</strong></td><td>N/A (Monolithic)</td><td>N/A (Monolithic)</td><td>Netflix Eureka Registry</td></tr>
-                </tbody>
+                <tr><td><strong>Configuration Management</strong</td><td>Static XML/YAML per server</td><td>Spring Cloud Config (centralized)</td><td>Spring Cloud Config + Git-backed properties</td></tr>
+<tr><td><strong>Scalability</strong</td><td>Scale by adding server nodes, limited by monolith size</td><td>Similar to Lab2, limited horizontal scaling</td><td>Independent service scaling, container orchestration via Docker‑Compose/K8s</td></tr>
+<tr><td><strong>Performance</strong</td><td>Good for monolithic workloads, shared JVM</td><td>Comparable, but additional abstraction layers</td><td>Optimized per‑service, lightweight containers, reduced startup time</td></tr>
+<tr><td><strong>Fault Tolerance</strong</td><td>Traditional try‑catch, no circuit‑breaker</td><td>Basic error handling, optional Resilience4j</td><td>Resilience4j Circuit Breaker + fallback, saga orchestration</td></tr>
+<tr><td><strong>Monitoring & Metrics</strong</td><td>JMX, log files</td><td>Spring Actuator basics</td><td>Actuator + Micrometer + Prometheus/Grafana integration</td></tr>
+<tr><td><strong>Testing Strategy</strong</td><td>Unit + integration on server</td><td>Spring Test slices, MockMvc</td><td>Contract testing (Spring Cloud Contract), end‑to‑end with Docker Compose</td></tr>
+<tr><td><strong>Team Structure Impact</strong</td><td>Single team owns whole monolith</td><td>Same as Lab2</td><td>Cross‑functional squads per microservice</td></tr>
+<tr><td><strong>Operational Complexity</strong</td><td>Low, single deployment unit</td><td>Low to moderate</td><td>Higher – service registry, config server, gateway, multiple containers</td></tr>
+<tr><td><strong>Cloud‑Native Readiness</strong</td><td>Not cloud‑native</td><td>Partially cloud‑ready</td><td>Fully cloud‑native, containerized, dynamic scaling</td></tr>
+</tbody>
             </table>
         </div>
         <div class="slide-footer">
